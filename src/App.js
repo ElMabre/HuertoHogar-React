@@ -1,4 +1,5 @@
 import ProductList from './components/ProductList';
+import ProductDetail from './components/ProductDetail';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Container } from 'react-bootstrap'; // Para centrar el contenido principal
@@ -27,10 +28,11 @@ function App() {
         <main style={{ flex: 1 }} className="py-3"> {/* Asegura que el main ocupe el espacio disponible */}
           <Routes> {/* Define las rutas disponibles */}
             <Route path="/" element={<HomePage />} />
-            <Route path="/productos" element={<ProductList />} /> // 
+            <Route path="/productos" element={<ProductList />} /> 
             <Route path="/nosotros" element={<NosotrosPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/contacto" element={<ContactoPage />} />
+            <Route path="/producto/:id" element={<ProductDetail />} />
             <Route path="/carrito" element={<CartPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/registro" element={<RegisterPage />} />
