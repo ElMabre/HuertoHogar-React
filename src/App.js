@@ -1,3 +1,4 @@
+import ProductList from './components/ProductList';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Container } from 'react-bootstrap'; // Para centrar el contenido principal
@@ -8,7 +9,6 @@ import Footer from './components/Footer';
 // --- Placeholder Components (Crearemos estos archivos después) ---
 // Simulan las páginas principales por ahora
 const HomePage = () => <Container className="my-5"><h1 className="text-center">Página de Inicio</h1><p className="text-center">Contenido principal irá aquí.</p></Container>;
-const ProductsPage = () => <Container className="my-5"><h1 className="text-center">Página de Productos</h1><p className="text-center">Listado de productos irá aquí.</p></Container>;
 const NosotrosPage = () => <Container className="my-5"><h1 className="text-center">Página Nosotros</h1><p className="text-center">Información sobre la empresa irá aquí.</p></Container>;
 const BlogPage = () => <Container className="my-5"><h1 className="text-center">Página del Blog</h1><p className="text-center">Listado de artículos irá aquí.</p></Container>;
 const ContactoPage = () => <Container className="my-5"><h1 className="text-center">Página de Contacto</h1><p className="text-center">Formulario de contacto irá aquí.</p></Container>;
@@ -27,7 +27,7 @@ function App() {
         <main style={{ flex: 1 }} className="py-3"> {/* Asegura que el main ocupe el espacio disponible */}
           <Routes> {/* Define las rutas disponibles */}
             <Route path="/" element={<HomePage />} />
-            <Route path="/productos" element={<ProductsPage />} />
+            <Route path="/productos" element={<ProductList />} /> // 
             <Route path="/nosotros" element={<NosotrosPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/contacto" element={<ContactoPage />} />
