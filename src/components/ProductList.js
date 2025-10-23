@@ -1,7 +1,6 @@
 import ProductCard from './ProductCard'; // Sin llaves {}
 import React, { useState, useEffect } from 'react';
 import { Row, Col } from 'react-bootstrap'; // Para la estructura de la cuadrícula
-import ProductCard from './ProductCard'; // Importa el componente de tarjeta
 
 // Datos de productos (temporalmente hardcodeados, tomados de tu productManager.js)
 const initialProducts = [
