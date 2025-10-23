@@ -2,17 +2,17 @@ import ProductCard from './ProductCard'; // Sin llaves {}
 import React, { useState, useEffect } from 'react';
 import { Row, Col } from 'react-bootstrap'; // Para la estructura de la cuadrícula
 
-// Datos de productos (temporalmente hardcodeados, tomados de tu productManager.js)
+// Datos de productos (temporalmente hardcodeados, tomados de  productManager.js)
 const initialProducts = [
-  { id: 'FR001', nombre: 'Manzanas Fuji', precio: 1200, categoria: 'frutas', imagen: 'img/manzana.jpg', stock: 150, descripcion: 'Manzanas Fuji crujientes y dulces...', origen: 'Valle del Maule' },
-  { id: 'FR002', nombre: 'Naranjas Valencia', precio: 1000, categoria: 'frutas', imagen: 'img/naranja.jpg', stock: 200, descripcion: 'Jugosas y ricas en vitamina C...', origen: 'Región de Valparaíso' },
-  { id: 'FR003', nombre: 'Plátanos Cavendish', precio: 800, categoria: 'frutas', imagen: 'img/platano.jpg', stock: 250, descripcion: 'Plátanos maduros y dulces...', origen: 'Región de O\'Higgins' },
-  { id: 'VR001', nombre: 'Zanahorias Orgánicas', precio: 900, categoria: 'verduras', imagen: 'img/zanahoria.jpg', stock: 100, descripcion: 'Zanahorias crujientes cultivadas sin pesticidas...', origen: 'Región de O\'Higgins' },
-  { id: 'VR002', nombre: 'Espinacas Frescas', precio: 700, categoria: 'verduras', imagen: 'img/espinaca.jpg', stock: 80, descripcion: 'Espinacas frescas y nutritivas...', origen: 'Región Metropolitana' },
-  { id: 'VR003', nombre: 'Pimientos Tricolores', precio: 1500, categoria: 'verduras', imagen: 'img/pimiento.jpg', stock: 120, descripcion: 'Pimientos rojos, amarillos y verdes...', origen: 'Región de Valparaíso' },
-  { id: 'PO001', nombre: 'Miel Orgánica', precio: 5000, categoria: 'organicos', imagen: 'img/miel.jpg', stock: 50, descripcion: 'Miel pura y orgánica...', origen: 'Región del Maule' },
-  { id: 'PO002', nombre: 'Quinua Orgánica', precio: 3500, categoria: 'organicos', imagen: 'img/quinua.jpg', stock: 75, descripcion: 'Quinua orgánica de alta calidad...', origen: 'Región de La Araucanía' },
-  { id: 'PL001', nombre: 'Leche Entera', precio: 1200, categoria: 'lacteos', imagen: 'img/leche.jpg', stock: 60, descripcion: 'Leche entera fresca...', origen: 'Región de Los Lagos' }
+  { id: 'FR001', nombre: 'Manzanas Fuji', precio: 1200, categoria: 'frutas', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/manzana.jpg', stock: 150, descripcion: 'Manzanas Fuji crujientes y dulces...', origen: 'Valle del Maule' },
+  { id: 'FR002', nombre: 'Naranjas Valencia', precio: 1000, categoria: 'frutas', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/naranja.jpg', stock: 200, descripcion: 'Jugosas y ricas en vitamina C...', origen: 'Región de Valparaíso' },
+  { id: 'FR003', nombre: 'Plátanos Cavendish', precio: 800, categoria: 'frutas', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/platano.jpg', stock: 250, descripcion: 'Plátanos maduros y dulces...', origen: 'Región de O\'Higgins' },
+  { id: 'VR001', nombre: 'Zanahorias Orgánicas', precio: 900, categoria: 'verduras', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/zanahoria.jpg', stock: 100, descripcion: 'Zanahorias crujientes cultivadas sin pesticidas...', origen: 'Región de O\'Higgins' },
+  { id: 'VR002', nombre: 'Espinacas Frescas', precio: 700, categoria: 'verduras', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/espinaca.jpg', stock: 80, descripcion: 'Espinacas frescas y nutritivas...', origen: 'Región Metropolitana' },
+  { id: 'VR003', nombre: 'Pimientos Tricolores', precio: 1500, categoria: 'verduras', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/pimiento.jpg', stock: 120, descripcion: 'Pimientos rojos, amarillos y verdes...', origen: 'Región de Valparaíso' },
+  { id: 'PO001', nombre: 'Miel Orgánica', precio: 5000, categoria: 'organicos', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/miel.jpg', stock: 50, descripcion: 'Miel pura y orgánica...', origen: 'Región del Maule' },
+  { id: 'PO002', nombre: 'Quinua Orgánica', precio: 3500, categoria: 'organicos', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/quinua.jpg', stock: 75, descripcion: 'Quinua orgánica de alta calidad...', origen: 'Región de La Araucanía' },
+  { id: 'PL001', nombre: 'Leche Entera', precio: 1200, categoria: 'lacteos', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/leche.jpg', stock: 60, descripcion: 'Leche entera fresca...', origen: 'Región de Los Lagos' }
 ];
 
 function ProductList() {
