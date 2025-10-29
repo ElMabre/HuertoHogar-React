@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-// Ubicaciones de las tiendas (de tu mapa.js y Caso HuertoHogar)
+// Ubicaciones de las tiendas
 const locales = [
   { nombre: "Santiago", direccion: "Av. Principal 123", lat: -33.4489, lng: -70.6693 },
   { nombre: "Puerto Montt", direccion: "Costanera 456", lat: -41.4693, lng: -72.9424 },
@@ -10,24 +10,20 @@ const locales = [
   { nombre: "Concepción", direccion: "Barrio Universitario 987", lat: -36.8201, lng: -73.0444 }
 ];
 
-// Centro geográfico de Chile
 const centroChile = { lat: -35.6751, lng: -71.5430 };
 
 function MapComponent() {
-  const mapRef = useRef(null); // Referencia al div que contendrá el mapa
+  const mapRef = useRef(null); 
   const [isApiLoaded, setIsApiLoaded] = useState(false);
 
   useEffect(() => {
-    // Función para cargar el script de Google Maps
     const loadGoogleMapsScript = () => {
-      // Evitar cargar el script múltiples veces
       if (window.google || document.getElementById('google-maps-script')) {
         setIsApiLoaded(true);
         return;
       }
 
-      // 1. LEE LA API KEY DESDE EL ARCHIVO .env
-      const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+      const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
       if (!apiKey) {
         console.error("Error: API Key de Google Maps no encontrada. Asegúrate de crear un archivo .env y reiniciar el servidor.");
@@ -36,32 +32,32 @@ function MapComponent() {
 
       const script = document.createElement('script');
       script.id = 'google-maps-script';
-      
-      // 2. CONSTRUYE LA URL USANDO LA VARIABLE
+      // Construye la URL usando la variable
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
-      
+      // *** FIN DE LA CORRECCIÓN ***
+
       script.async = true;
       script.defer = true;
       script.onload = () => {
         setIsApiLoaded(true);
       };
       script.onerror = () => {
-        console.error("Error al cargar el script de Google Maps. Verifica la API Key y las restricciones en Google Cloud.");
+        console.error("Error al cargar el script de Google Maps.");
       };
       document.body.appendChild(script);
     };
 
     loadGoogleMapsScript();
-  }, []); // El array vacío asegura que se ejecute solo una vez
+  }, []);
 
   useEffect(() => {
+    // Añadimos la comprobación 'window.google.maps' para evitar el "crash"
     if (isApiLoaded && mapRef.current && window.google && window.google.maps) {
       const map = new window.google.maps.Map(mapRef.current, {
         zoom: 5,
         center: centroChile,
       });
 
-      // Añadir marcadores
       locales.forEach(local => {
         const marker = new window.google.maps.Marker({
           position: { lat: local.lat, lng: local.lng },
@@ -80,14 +76,14 @@ function MapComponent() {
     } else if (isApiLoaded) {
       console.error("API de Google Maps cargada, pero window.google.maps no está disponible. ¿API Key válida? ¿Facturación habilitada?");
     }
-  }, [isApiLoaded]); // Este efecto depende de que la API se haya cargado
+  }, [isApiLoaded]); 
 
   return (
     <div 
       ref={mapRef} 
       id="mapa" 
       style={{ height: '400px', width: '100%', backgroundColor: '#e9ecef', borderRadius: '0.375rem' }} 
-      className="shadow-sm"
+t      className="shadow-sm"
     >
       {!isApiLoaded && <div className="text-center p-5">Cargando mapa...</div>}
     </div>
