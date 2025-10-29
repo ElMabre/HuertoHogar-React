@@ -9,7 +9,6 @@
 
 
 
-
 <b>Autores:</b> Matias Guzman, Felipe Quezada y Danilo Celis
 </p>
 
@@ -126,8 +125,6 @@ Clonar el Repositorio:
 git clone [https://github.com/ElMabre/HuertoHogarApp.git](https://github.com/ElMabre/HuertoHogarApp.git)
 cd HuertoHogarApp
 
-
-(Nota: Reemplaza la URL si tu repositorio está en otra ubicación)
 
 Abrir el Proyecto:
 
