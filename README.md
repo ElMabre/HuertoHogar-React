@@ -1,70 +1,148 @@
-# Getting Started with Create React App
+<p align="center">
+<img src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/huertohogarlogoconfondo.png" width="300" alt="HuertoHogar Logo"/>
+</p>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<h1 align="center">HuertoHogar – Aplicación Móvil Android</h1>
 
-## Available Scripts
+<p align="center">
+<b>Asignatura:</b> Desarrollo de Aplicaciones Móviles (DSY1105) · <b>Duoc UC</b>
 
-In the project directory, you can run:
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+<b>Autores:</b> Matias Guzman, Felipe Quezada y Danilo Celis
+</p>
 
-### `npm test`
+<p align="center">
+<img src="https://img.shields.io/badge/Android_Studio-Iguana_|_2023.2.1-3DDC84?logo=androidstudio&logoColor=white" alt="Android Studio Version"/>
+<img src="https://img.shields.io/badge/Kotlin-1.9+-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin Version"/>
+<img src="https://img.shields.io/badge/Jetpack_Compose-Material_3-4285F4?logo=android&logoColor=white" alt="Jetpack Compose Material 3"/>
+<img src="https://img.shields.io/badge/Arquitectura-MVVM-FF9800" alt="Arquitectura MVVM"/>
+<img src="https://img.shields.io/badge/Licencia-MIT-00C853?logo=open-source-initiative&logoColor=white" alt="Licencia MIT"/>
+</p>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Descripción General
 
-### `npm run build`
+HuertoHogar es una aplicación móvil Android nativa, desarrollada como proyecto académico para la asignatura Desarrollo de Aplicaciones Móviles (DSY1105) en Duoc UC. El objetivo principal es ofrecer una plataforma moderna e intuitiva para la adquisición de productos agrícolas frescos directamente desde el campo.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+La aplicación permite a los usuarios explorar un catálogo digital, gestionar un carrito de compras virtual y administrar su perfil personal, incluyendo la personalización de la imagen de usuario. Fue desarrollada íntegramente en Kotlin, utilizando Jetpack Compose para la interfaz de usuario y siguiendo el patrón arquitectónico MVVM (Model-View-ViewModel) para asegurar un diseño modular, mantenible y escalable.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Funcionalidades Implementadas
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+A continuación se detallan las funcionalidades clave incorporadas en la aplicación:
 
-### `npm run eject`
+Autenticación de Usuarios:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Flujo completo de Inicio de Sesión y Registro.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Validación en tiempo real de campos (formato de email, longitud de contraseña, formato de RUN chileno, aceptación de términos).
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Persistencia segura de la sesión del usuario (email) mediante DataStore Preferences.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Catálogo y Carrito de Compras:
 
-## Learn More
+Pantalla Principal (HomeScreen): Muestra productos destacados utilizando LazyRow para una navegación horizontal eficiente.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Catálogo Completo (ProductsScreen): Presenta todos los productos disponibles en una cuadrícula adaptable (LazyVerticalGrid) que ajusta el número de columnas según el tamaño de pantalla.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Detalle de Producto (ProductDetailScreen): Ofrece información extendida del producto seleccionado (imagen, descripción, origen, precio unitario, stock disponible) y permite añadirlo al carrito.
 
-### Code Splitting
+Gestión del Carrito: Implementado con un CartViewModel compartido y CartUiState, permite añadir, eliminar, actualizar cantidad (botones +/-) y vaciar el carrito.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Feedback Visual: Se incluye un contador de ítems (BadgedBox) en la barra de navegación superior y una pantalla de resumen (CartScreen).
 
-### Analyzing the Bundle Size
+Perfil de Usuario (ProfileScreen):
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Muestra el email del usuario autenticado, obtenido de forma reactiva desde DataStore.
 
-### Making a Progressive Web App
+Permite al usuario seleccionar una imagen de la galería o capturar una nueva foto con la cámara del dispositivo, utilizando Activity Result APIs.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Implementa la solicitud y manejo de permisos necesarios (específicamente CAMERA).
 
-### Advanced Configuration
+Utiliza FileProvider y almacenamiento interno para el manejo seguro de archivos temporales de la cámara, previniendo errores y siguiendo las directrices de seguridad de Android.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+La imagen de perfil seleccionada persiste visualmente al navegar entre pantallas y se muestra en la barra superior.
 
-### Deployment
+Incluye funcionalidad de Cierre de Sesión, que elimina los datos de sesión de DataStore y redirige al usuario a la pantalla de Login, limpiando la pila de navegación.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Experiencia de Usuario:
 
-### `npm run build` fails to minify
+Se incorporaron indicadores de carga (CircularProgressIndicator) en los botones de Login y Registro durante las operaciones asíncronas para proveer retroalimentación visual.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+La navegación entre pantallas se gestiona mediante Navigation Compose, asegurando transiciones fluidas.
+
+El manejo de estado se realiza de forma reactiva con Kotlin Coroutines y StateFlow.
+
+Stack Tecnológico
+
+Lenguaje: Kotlin
+
+UI Framework: Jetpack Compose (con componentes de Material 3)
+
+Arquitectura: MVVM (Model-View-ViewModel)
+
+Navegación: Navigation Compose
+
+Asincronía / Estado: Kotlin Coroutines, StateFlow
+
+Persistencia Local: DataStore Preferences
+
+Carga de Imágenes: Coil
+
+Hardware / OS: Activity Result APIs (Cámara, Galería, Permisos), FileProvider
+
+Sistema de Build: Gradle (con Version Catalog - libs.versions.toml)
+
+Estructura del Proyecto
+
+El código fuente está organizado siguiendo las convenciones de MVVM para facilitar la comprensión y el mantenimiento:
+
+├── data/
+│   └── local/        # Componentes de acceso a datos locales (e.g., SessionManager)
+├── model/            # Clases de datos y estados de UI (Producto, CartUiState, etc.)
+├── navigation/       # Definición de rutas (AppScreens) y configuración de NavHost (AppNavigation)
+├── ui/
+│   ├── components/   # Componentes Composable reutilizables (ProductCard, etc.)
+│   ├── screens/      # Componentes Composable para cada pantalla (LoginScreen, HomeScreen, etc.)
+│   └── theme/        # Definición del tema visual (Color.kt, Type.kt, Theme.kt)
+└── viewmodel/        # Clases ViewModel que encapsulan la lógica de presentación
+
+
+
+Guía de Inicio Rápido
+
+Requisitos Previos
+
+Android Studio | 2023.2.1 o una versión superior.
+
+Java Development Kit (JDK) 11 o superior.
+
+Dispositivo físico o emulador Android con API nivel 26 (Android 8.0 Oreo) o superior.
+
+Pasos para Ejecutar
+
+Clonar el Repositorio:
+
+git clone [https://github.com/ElMabre/HuertoHogarApp.git](https://github.com/ElMabre/HuertoHogarApp.git)
+cd HuertoHogarApp
+
+
+(Nota: Reemplaza la URL si tu repositorio está en otra ubicación)
+
+Abrir el Proyecto:
+
+Inicia Android Studio.
+
+Selecciona File > Open... y navega hasta la carpeta HuertoHogarApp clonada.
+
+Sincronizar Gradle:
+
+Espera a que Android Studio indexe los archivos y descargue todas las dependencias especificadas en los archivos Gradle. Puede que necesites hacer clic en Sync Project with Gradle Files (icono de elefante con flecha) si no se inicia automáticamente.
+
+Seleccionar Dispositivo:
+
+Elige un dispositivo de ejecución (emulador previamente configurado o un dispositivo físico conectado y habilitado para depuración USB) en la barra de herramientas superior.
+
+Ejecutar la Aplicación:
+
+Haz clic en el botón Run 'app' o presiona Shift + F10.

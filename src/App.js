@@ -1,22 +1,22 @@
-import ProductList from './components/ProductList';
-import ProductDetail from './components/ProductDetail';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Container } from 'react-bootstrap'; // Para centrar el contenido principal
 
-import Navigation from './components/Navbar'; 
+// --- Importa los componentes principales ---
+import Navigation from './components/Navbar';
 import Footer from './components/Footer';
+import ProductList from './components/ProductList';
+import ProductDetail from './components/ProductDetail';
 
-// --- Placeholder Components (Crearemos estos archivos después) ---
-// Simulan las páginas principales por ahora
-const HomePage = () => <Container className="my-5"><h1 className="text-center">Página de Inicio</h1><p className="text-center">Contenido principal irá aquí.</p></Container>;
-const NosotrosPage = () => <Container className="my-5"><h1 className="text-center">Página Nosotros</h1><p className="text-center">Información sobre la empresa irá aquí.</p></Container>;
-const BlogPage = () => <Container className="my-5"><h1 className="text-center">Página del Blog</h1><p className="text-center">Listado de artículos irá aquí.</p></Container>;
-const ContactoPage = () => <Container className="my-5"><h1 className="text-center">Página de Contacto</h1><p className="text-center">Formulario de contacto irá aquí.</p></Container>;
-const CartPage = () => <Container className="my-5"><h1 className="text-center">Página del Carrito</h1><p className="text-center">Contenido del carrito irá aquí.</p></Container>;
-const LoginPage = () => <Container className="my-5"><h1 className="text-center">Página de Login</h1><p className="text-center">Formulario de login irá aquí.</p></Container>;
-const RegisterPage = () => <Container className="my-5"><h1 className="text-center">Página de Registro</h1><p className="text-center">Formulario de registro irá aquí.</p></Container>;
-// -----------------------------------------------------------------
+// --- Importa los componentes de página ---
+import HomePage from './components/HomePage';
+import NosotrosPage from './components/NosotrosPage';
+import BlogPage from './components/BlogPage';
+import ContactoPage from './components/ContactoPage';
+import CartPage from './components/CartPage';
+import LoginPage from './components/LoginPage';
+import RegistrationPage from './components/RegisterPage'; // Ojo con el nombre cambiado
+// ------------------------------------------
 
 function App() {
   return (
@@ -28,15 +28,15 @@ function App() {
         <main style={{ flex: 1 }} className="py-3"> {/* Asegura que el main ocupe el espacio disponible */}
           <Routes> {/* Define las rutas disponibles */}
             <Route path="/" element={<HomePage />} />
-            <Route path="/productos" element={<ProductList />} /> 
+            <Route path="/productos" element={<ProductList />} />
             <Route path="/nosotros" element={<NosotrosPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/contacto" element={<ContactoPage />} />
-            <Route path="/producto/:id" element={<ProductDetail />} />
+            <Route path="/producto/:id" element={<ProductDetail />} /> {/* Ruta para detalle */}
             <Route path="/carrito" element={<CartPage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/registro" element={<RegisterPage />} />
-            {/* Agrega más rutas aquí (ej: detalle de producto) */}
+            <Route path="/registro" element={<RegistrationPage />} /> {/* Usa el componente importado */}
+            {/* Puedes agregar más rutas aquí si es necesario */}
           </Routes>
         </main>
 

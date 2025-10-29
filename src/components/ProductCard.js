@@ -41,7 +41,6 @@ function ProductCard({ product }) {
         {/* Precio y Categoría */}
         <div className="d-flex justify-content-between align-items-center mb-2">
           <span className="fw-bold" style={{ color: '#2E8B57' }}>
-            {/* Formateo de precio (simple por ahora) */}
             ${product.precio ? product.precio.toLocaleString('es-CL') : 'N/A'}
           </span>
           {product.categoria && (
