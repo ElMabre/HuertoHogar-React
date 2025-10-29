@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 
 // 1. Crear el Contexto
 const CartContext = createContext();
@@ -8,7 +8,8 @@ export const useCart = () => {
   return useContext(CartContext);
 };
 
-// Datos de productos (necesitamos acceso a ellos aquí también, temporalmente duplicado)
+// Datos de productos (necesitamos acceso a ellos aquí también)
+// En una app real, esto vendría de una API o un estado global centralizado
 const initialProducts = [
     { id: 'FR001', nombre: 'Manzanas Fuji', precio: 1200, categoria: 'frutas', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/manzana.jpg', stock: 150, descripcion: 'Manzanas Fuji crujientes y dulces...', origen: 'Valle del Maule' },
     { id: 'FR002', nombre: 'Naranjas Valencia', precio: 1000, categoria: 'frutas', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/naranja.jpg', stock: 200, descripcion: 'Jugosas y ricas en vitamina C...', origen: 'Región de Valparaíso' },
@@ -21,81 +22,138 @@ const initialProducts = [
     { id: 'PL001', nombre: 'Leche Entera', precio: 1200, categoria: 'lacteos', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/leche.jpg', stock: 60, descripcion: 'Leche entera fresca...', origen: 'Región de Los Lagos' }
   ];
 
+const SHIPPING_COST = 3500; // Costo de envío fijo
 
 // 2. Crear el Proveedor del Contexto
 export const CartProvider = ({ children }) => {
-  // Estado principal: array de items en el carrito
   const [cartItems, setCartItems] = useState(() => {
-    // Cargar carrito inicial desde localStorage
     const localData = localStorage.getItem('huertohogar_carrito_react');
     return localData ? JSON.parse(localData) : [];
   });
 
-  // Efecto para guardar en localStorage cada vez que cartItems cambie
   useEffect(() => {
     localStorage.setItem('huertohogar_carrito_react', JSON.stringify(cartItems));
   }, [cartItems]);
 
   // --- Funciones para manipular el carrito ---
 
-  // Función para añadir un producto (similar a tu cartManager)
-  const addToCart = (productId, quantity = 1) => {
+  const addToCart = useCallback((productId, quantity = 1) => {
     const product = initialProducts.find(p => p.id === productId);
     if (!product) {
       console.error("Producto no encontrado:", productId);
-      // showToast('Producto no encontrado', 'danger'); // Implementar toasts después
+      alert('Producto no encontrado'); // Temporal
       return;
     }
 
     setCartItems(prevItems => {
       const existingItemIndex = prevItems.findIndex(item => item.id === productId);
-
-      // Verificar stock general
       const currentQuantityInCart = existingItemIndex !== -1 ? prevItems[existingItemIndex].cantidad : 0;
+
       if (product.stock < currentQuantityInCart + quantity) {
-         console.warn("Stock insuficiente para:", productId);
-        // showToast('No hay suficiente stock disponible', 'warning');
+        console.warn("Stock insuficiente para:", productId);
         alert('No hay suficiente stock disponible'); // Temporal
-        return prevItems; // No modificar el carrito si no hay stock
+        return prevItems;
       }
 
-
       if (existingItemIndex !== -1) {
-        // Producto ya existe, actualizar cantidad
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex].cantidad += quantity;
         return updatedItems;
       } else {
-        // Producto no existe, añadirlo
         return [...prevItems, {
           id: product.id,
           nombre: product.nombre,
           precio: product.precio,
           imagen: product.imagen,
-          stock: product.stock, // Guardamos el stock para referencia
+          stock: product.stock,
           cantidad: quantity
         }];
       }
     });
-    // showToast(`${product.nombre} añadido al carrito`, 'success'); // Implementar toasts después
-  };
+  }, []); // useCallback para optimización
 
-  // --- Otras funciones (removeFromCart, updateQuantity, clearCart, etc.) ---
-  // Las añadiremos en el siguiente paso
+  const removeFromCart = useCallback((productId) => {
+    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+    // Podríamos añadir toast de éxito aquí
+  }, []);
 
-  // --- Valores calculados (totalItems, subtotal, total) ---
-   const getTotalItems = () => {
-     return cartItems.reduce((total, item) => total + item.cantidad, 0);
-   };
+  const updateQuantity = useCallback((productId, newQuantity) => {
+    const quantityNum = parseInt(newQuantity);
+
+    // Si la cantidad no es válida o es cero o menos, eliminar el item
+    if (isNaN(quantityNum) || quantityNum <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+
+    // Buscar el producto original para verificar stock máximo
+     const product = initialProducts.find(p => p.id === productId);
+     if (!product) {
+         console.error("Producto no encontrado al actualizar cantidad:", productId);
+         removeFromCart(productId); // Quitar si el producto ya no existe
+         return;
+     }
+
+
+    setCartItems(prevItems => {
+      const itemIndex = prevItems.findIndex(item => item.id === productId);
+      if (itemIndex === -1) return prevItems; // Item no encontrado
+
+      // Validar contra el stock del producto original
+      const finalQuantity = Math.min(quantityNum, product.stock); // No permitir más que el stock
+
+      if(quantityNum > product.stock) {
+         alert(`Solo quedan ${product.stock} unidades de ${product.nombre}`); // Avisar si se limitó
+      }
+
+
+      const updatedItems = [...prevItems];
+      updatedItems[itemIndex].cantidad = finalQuantity;
+      return updatedItems;
+    });
+  }, [removeFromCart]); // Incluir removeFromCart como dependencia
+
+  const clearCart = useCallback(() => {
+    if (cartItems.length === 0) {
+       alert('El carrito ya está vacío'); // Temporal
+       return;
+    }
+    if (window.confirm('¿Estás seguro de que deseas vaciar el carrito?')) { // Confirmación
+      setCartItems([]);
+      // Podríamos añadir toast de éxito aquí
+    }
+  }, [cartItems.length]); // Depende de si hay items para mostrar confirmación
+
+  // --- Valores calculados ---
+  const calculateSubtotal = useCallback(() => {
+    return cartItems.reduce((total, item) => total + (item.precio * item.cantidad), 0);
+  }, [cartItems]);
+
+  const calculateShipping = useCallback(() => {
+    return cartItems.length > 0 ? SHIPPING_COST : 0;
+  }, [cartItems.length]);
+
+  const calculateTotal = useCallback(() => {
+    return calculateSubtotal() + calculateShipping();
+  }, [calculateSubtotal, calculateShipping]); // Depende de las otras funciones
+
+  const getTotalItems = useCallback(() => {
+    return cartItems.reduce((total, item) => total + item.cantidad, 0);
+  }, [cartItems]);
 
   // --- Valor que proveerá el contexto ---
   const value = {
     cartItems,
     addToCart,
-    // ... (otras funciones que añadiremos)
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    subtotal: calculateSubtotal(),
+    shippingCost: calculateShipping(),
+    total: calculateTotal(),
     totalItems: getTotalItems(),
+    // Podríamos añadir aquí la lista de productos `initialProducts` si fuera necesario
   };
 
-  // Retorna el Provider "envolviendo" a los componentes hijos
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
