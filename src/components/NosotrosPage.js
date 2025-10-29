@@ -1,13 +1,11 @@
 import React from 'react';
-// 1. Importar los componentes de React Bootstrap necesarios
-import { Container, Row, Col, Card, Image, ListGroup } from 'react-bootstrap'; // Añadir ListGroup
-import MapComponent from './MapComponent'; // 2. Importar el componente del Mapa
+import { Container, Row, Col, Card, Image, ListGroup } from 'react-bootstrap';
+import MapComponent from './MapComponent'; 
 
 function NosotrosPage() {
   return (
     <Container className="my-5">
 
-      {/* ... (Sección Historia - sin cambios) ... */}
       <section className="row align-items-center mb-5">
         <Col lg={6} className="mb-4 mb-lg-0">
           <h1 className="section-title mb-4">Sobre HuertoHogar</h1>
@@ -16,11 +14,11 @@ function NosotrosPage() {
           <p>Nuestra misión es conectar a las familias chilenas con el campo, promoviendo un estilo de vida saludable y sostenible.</p>
         </Col>
         <Col lg={6}>
-          <Image src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/CampoChileno.avif" alt="Campo chileno" fluid rounded shadow />
+          <Image src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/CampoChileno.avif" alt="Campo chileno" fluid rounded className="shadow" />
         </Col>
       </section>
 
-      {/* ... (Sección Misión y Visión - sin cambios) ... */}
+      {/* ... (Sección Misión y Visión) ... */}
       <section className="row mb-5">
         <Col md={6} className="mb-4">
           <Card className="h-100 border-0 shadow-sm text-center p-4">
@@ -46,12 +44,11 @@ function NosotrosPage() {
         </Col>
       </section>
 
-      {/* 3. NUEVA SECCIÓN - Tiendas y Mapa (basada en nosotros.html) */}
+      {/* ... (Sección Tiendas y Mapa) ... */}
       <section className="mb-5">
         <h2 className="text-center section-title mb-4">Nuestras Tiendas</h2>
         <p className="text-center text-muted mb-4">Contamos con presencia en las principales ciudades de Chile.</p>
         <Row>
-          {/* Columna de Ubicaciones */}
           <Col md={6} className="mb-4 mb-md-0">
             <Card className="h-100 shadow-sm">
               <Card.Header as="h5" className="bg-success text-white">
@@ -68,14 +65,12 @@ function NosotrosPage() {
             </Card>
           </Col>
           
-          {/* Columna del Mapa */}
           <Col md={6}>
             <Card className="h-100 shadow-sm">
               <Card.Header as="h5" className="bg-success text-white">
                 <i className="bi bi-map me-2"></i>Mapa de Ubicaciones
               </Card.Header>
               <Card.Body className="p-0" style={{minHeight: '400px'}}>
-                {/* 4. Renderizar el componente del Mapa */}
                 <MapComponent />
               </Card.Body>
             </Card>
@@ -83,13 +78,13 @@ function NosotrosPage() {
         </Row>
       </section>
 
-      {/* ... (Sección Equipo - sin cambios) ... */}
+      {/* ... (Sección Equipo) ... */}
       <section>
         <h2 className="text-center section-title mb-4">Nuestro Equipo</h2>
         <Row>
           <Col md={4} className="mb-4">
             <Card className="text-center border-0 shadow-sm h-100">
-              <Card.Img variant="top" src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/danilo.jpg" alt="Danilo Celis" className="team-photo" />
+              <Card.Img variant="top" src="%PUBLIC_URL%/img/danilo.jpg" alt="Danilo Celis" className="team-photo" />
               <Card.Body>
                 <Card.Title as="h5">Danilo Celis</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Testing</Card.Subtitle>
@@ -99,7 +94,7 @@ function NosotrosPage() {
           </Col>
           <Col md={4} className="mb-4">
             <Card className="text-center border-0 shadow-sm h-100">
-              <Card.Img variant="top" src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/Matias.jpg" alt="Matias Guzman" className="team-photo" />
+              <Card.Img variant="top" src="%PUBLIC_URL%/img/matias.jpg" alt="Matias Guzman" className="team-photo" />
               <Card.Body>
                 <Card.Title as="h5">Matias Guzman</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Backend</Card.Subtitle>
@@ -109,7 +104,7 @@ function NosotrosPage() {
           </Col>
           <Col md={4} className="mb-4">
             <Card className="text-center border-0 shadow-sm h-100">
-              <Card.Img variant="top" src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/felipe.jpg" alt="Felipe Quezada" className="team-photo" />
+              <Card.Img variant="top" src="%PUBLIC_URL%/img/felipe.jpg" alt="Felipe Quezada" className="team-photo" />
               <Card.Body>
                 <Card.Title as="h5">Felipe Quezada</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Frontend</Card.Subtitle>
