@@ -16,7 +16,7 @@ function NosotrosPage() {
           <p>Nuestra misión es conectar a las familias chilenas con el campo, promoviendo un estilo de vida saludable y sostenible.</p>
         </Col>
         <Col lg={6}>
-          <Image src="%PUBLIC_URL%/img/CampoChileno.avif" alt="Campo chileno" fluid rounded shadow />
+          <Image src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/CampoChileno.avif" alt="Campo chileno" fluid rounded shadow />
         </Col>
       </section>
 
