@@ -26,9 +26,19 @@ function MapComponent() {
         return;
       }
 
+      // 1. LEE LA API KEY DESDE EL ARCHIVO .env
+      const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
+      if (!apiKey) {
+        console.error("Error: API Key de Google Maps no encontrada. Asegúrate de crear un archivo .env y reiniciar el servidor.");
+        return;
+      }
+
       const script = document.createElement('script');
       script.id = 'google-maps-script';
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`;
+      
+      // 2. CONSTRUYE LA URL USANDO LA VARIABLE
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
       
       script.async = true;
       script.defer = true;
@@ -36,13 +46,13 @@ function MapComponent() {
         setIsApiLoaded(true);
       };
       script.onerror = () => {
-        console.error("Error al cargar el script de Google Maps. Verifica la API Key y las restricciones.");
+        console.error("Error al cargar el script de Google Maps. Verifica la API Key y las restricciones en Google Cloud.");
       };
       document.body.appendChild(script);
     };
 
     loadGoogleMapsScript();
-  }, []);
+  }, []); // El array vacío asegura que se ejecute solo una vez
 
   useEffect(() => {
     if (isApiLoaded && mapRef.current && window.google && window.google.maps) {
@@ -51,7 +61,7 @@ function MapComponent() {
         center: centroChile,
       });
 
-      // Añadir marcadores (lógica de tu mapa.js)
+      // Añadir marcadores
       locales.forEach(local => {
         const marker = new window.google.maps.Marker({
           position: { lat: local.lat, lng: local.lng },
@@ -68,8 +78,7 @@ function MapComponent() {
         });
       });
     } else if (isApiLoaded) {
-      // Si la API dice que cargó pero window.google.maps no existe
-      console.error("API de Google Maps cargada, pero window.google.maps no está disponible.");
+      console.error("API de Google Maps cargada, pero window.google.maps no está disponible. ¿API Key válida? ¿Facturación habilitada?");
     }
   }, [isApiLoaded]); // Este efecto depende de que la API se haya cargado
 
