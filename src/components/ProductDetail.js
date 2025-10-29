@@ -10,6 +10,7 @@ import {
   Button,
   Breadcrumb,
 } from "react-bootstrap";
+import { useCart } from '../context/CartContext'; 
 
 // Necesitamos acceso a la lista de productos (temporalmente la duplicamos aquí)
 // En una app real, esto vendría de un estado global (Context) o una API
@@ -120,6 +121,7 @@ function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1); // Estado para la cantidad
+  const { addToCart } = useCart();
 
   // Efecto para buscar el producto cuando el 'id' cambia
   useEffect(() => {
