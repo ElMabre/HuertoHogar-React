@@ -1,53 +1,90 @@
-import ProductCard from './ProductCard'; // Sin llaves {}
 import React, { useState, useEffect } from 'react';
-import { Row, Col } from 'react-bootstrap'; // Para la estructura de la cuadrícula
+import { Row, Col, Container, Form } from 'react-bootstrap'; // 1. Importar Container y Form
+import ProductCard from './ProductCard';
+import { useProducts } from '../context/ProductContext'; // 2. Importar el hook de productos
 
-// Datos de productos (temporalmente hardcodeados, tomados de  productManager.js)
-const initialProducts = [
-  { id: 'FR001', nombre: 'Manzanas Fuji', precio: 1200, categoria: 'frutas', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/manzana.jpg', stock: 150, descripcion: 'Manzanas Fuji crujientes y dulces...', origen: 'Valle del Maule' },
-  { id: 'FR002', nombre: 'Naranjas Valencia', precio: 1000, categoria: 'frutas', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/naranja.jpg', stock: 200, descripcion: 'Jugosas y ricas en vitamina C...', origen: 'Región de Valparaíso' },
-  { id: 'FR003', nombre: 'Plátanos Cavendish', precio: 800, categoria: 'frutas', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/platano.jpg', stock: 250, descripcion: 'Plátanos maduros y dulces...', origen: 'Región de O\'Higgins' },
-  { id: 'VR001', nombre: 'Zanahorias Orgánicas', precio: 900, categoria: 'verduras', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/zanahoria.jpg', stock: 100, descripcion: 'Zanahorias crujientes cultivadas sin pesticidas...', origen: 'Región de O\'Higgins' },
-  { id: 'VR002', nombre: 'Espinacas Frescas', precio: 700, categoria: 'verduras', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/espinaca.jpg', stock: 80, descripcion: 'Espinacas frescas y nutritivas...', origen: 'Región Metropolitana' },
-  { id: 'VR003', nombre: 'Pimientos Tricolores', precio: 1500, categoria: 'verduras', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/pimiento.jpg', stock: 120, descripcion: 'Pimientos rojos, amarillos y verdes...', origen: 'Región de Valparaíso' },
-  { id: 'PO001', nombre: 'Miel Orgánica', precio: 5000, categoria: 'organicos', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/miel.jpg', stock: 50, descripcion: 'Miel pura y orgánica...', origen: 'Región del Maule' },
-  { id: 'PO002', nombre: 'Quinua Orgánica', precio: 3500, categoria: 'organicos', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/quinua.jpg', stock: 75, descripcion: 'Quinua orgánica de alta calidad...', origen: 'Región de La Araucanía' },
-  { id: 'PL001', nombre: 'Leche Entera', precio: 1200, categoria: 'lacteos', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/leche.jpg', stock: 60, descripcion: 'Leche entera fresca...', origen: 'Región de Los Lagos' }
-];
+// 3. ELIMINAR "initialProducts" (ya no se necesita aquí)
 
 function ProductList() {
-  // Estado para almacenar la lista de productos
-  const [products, setProducts] = useState([]);
+  // 4. Obtener la lista completa de productos del contexto
+  const { products } = useProducts();
 
-  // Simula la carga de productos cuando el componente se monta
+  // Estados para los filtros
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
+
+  // 5. Lógica para filtrar productos (como en el productManager.js original)
   useEffect(() => {
-    // En un futuro, aquí haríamos una llamada a una API
-    // Por ahora, usamos los datos hardcodeados
-    setProducts(initialProducts);
-  }, []); // El array vacío asegura que esto se ejecute solo una vez
+    let tempProducts = [...products];
+
+    // Filtrar por categoría
+    if (categoryFilter) {
+      tempProducts = tempProducts.filter(p => p.categoria === categoryFilter);
+    }
+
+    // Filtrar por búsqueda (nombre, descripción, origen)
+    if (searchFilter) {
+      const searchTerm = searchFilter.toLowerCase();
+      tempProducts = tempProducts.filter(p => 
+        p.nombre.toLowerCase().includes(searchTerm) ||
+        p.descripcion.toLowerCase().includes(searchTerm) ||
+        p.origen.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    setFilteredProducts(tempProducts);
+  }, [products, categoryFilter, searchFilter]); // Se ejecuta cuando cambian los productos o los filtros
 
   return (
-    <div>
-      {/* Título (opcional, podría estar en la página que usa este componente) */}
-      {/* <h2 className="mb-4">Nuestros Productos</h2> */}
+    // 6. Usar el componente Container de React Bootstrap
+    <Container className="my-5">
+      <h1 className="text-center mb-4 section-title">Nuestros Productos</h1>
 
-      {/* Cuadrícula de productos */}
-      <Row xs={1} md={2} lg={3} className="g-4"> {/* Define columnas por tamaño de pantalla */}
-        {products.length > 0 ? (
-          products.map(product => (
-            // Cada producto se renderiza en una columna con su ProductCard
+      {/* 7. Añadir los filtros (basado en productos.html) */}
+      <Row className="mb-4">
+        <Col md={6} className="mb-3 mb-md-0">
+          <Form.Select 
+            id="categoriaFilter"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <option value="">Todas las categorías</option>
+            <option value="frutas">Frutas Frescas</option>
+            <option value="verduras">Verduras Orgánicas</option>
+            <option value="organicos">Productos Orgánicos</option>
+            <option value="lacteos">Productos Lácteos</option>
+          </Form.Select>
+        </Col>
+        <Col md={6}>
+          <Form.Control
+            type="text"
+            id="searchProduct"
+            placeholder="Buscar productos..."
+            value={searchFilter}
+            onChange={(e) => setSearchFilter(e.target.value)}
+          />
+        </Col>
+      </Row>
+
+      {/* 8. Grid de productos (ahora usa filteredProducts) */}
+      <Row xs={1} md={2} lg={3} className="g-4" id="productGrid">
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map(product => (
             <Col key={product.id}>
-              <ProductCard product={product} /> {/* Pasa el objeto producto como prop */}
+              <ProductCard product={product} />
             </Col>
           ))
         ) : (
-          // Mensaje si no hay productos (o mientras cargan)
-          <Col>
-            <p>Cargando productos...</p> {/* Podría ser un spinner */}
+          // 9. Mensaje de "No hay productos" (basado en productos.html)
+          <Col className="text-center mt-5" id="noProducts">
+             <i className="bi bi-search display-4 text-muted"></i>
+             <h3 className="text-muted mt-3">No se encontraron productos</h3>
+             <p>Intenta con otros filtros o términos de búsqueda</p>
           </Col>
         )}
       </Row>
-    </div>
+    </Container>
   );
 }
 
