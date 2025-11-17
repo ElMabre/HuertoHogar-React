@@ -6,6 +6,7 @@ function NosotrosPage() {
   return (
     <Container className="my-5">
 
+      {/* Sección Historia */}
       <section className="row align-items-center mb-5">
         <Col lg={6} className="mb-4 mb-lg-0">
           <h1 className="section-title mb-4">Sobre HuertoHogar</h1>
@@ -14,11 +15,12 @@ function NosotrosPage() {
           <p>Nuestra misión es conectar a las familias chilenas con el campo, promoviendo un estilo de vida saludable y sostenible.</p>
         </Col>
         <Col lg={6}>
+          {/* IMAGEN ACTUALIZADA */}
           <Image src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/CampoChileno.avif" alt="Campo chileno" fluid rounded className="shadow" />
         </Col>
       </section>
 
-      {/* ... (Sección Misión y Visión) ... */}
+      {/* Sección Misión y Visión */}
       <section className="row mb-5">
         <Col md={6} className="mb-4">
           <Card className="h-100 border-0 shadow-sm text-center p-4">
@@ -44,7 +46,7 @@ function NosotrosPage() {
         </Col>
       </section>
 
-      {/* ... (Sección Tiendas y Mapa) ... */}
+      {/* Sección Tiendas y Mapa */}
       <section className="mb-5">
         <h2 className="text-center section-title mb-4">Nuestras Tiendas</h2>
         <p className="text-center text-muted mb-4">Contamos con presencia en las principales ciudades de Chile.</p>
@@ -78,13 +80,13 @@ function NosotrosPage() {
         </Row>
       </section>
 
-      {/* ... (Sección Equipo) ... */}
+      {/* Sección Equipo (IMÁGENES ACTUALIZADAS) */}
       <section>
         <h2 className="text-center section-title mb-4">Nuestro Equipo</h2>
         <Row>
           <Col md={4} className="mb-4">
             <Card className="text-center border-0 shadow-sm h-100">
-              <Card.Img variant="top" src="%PUBLIC_URL%/img/danilo.jpg" alt="Danilo Celis" className="team-photo" />
+              <Card.Img variant="top" src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/danilo.jpg" alt="Danilo Celis" className="team-photo" />
               <Card.Body>
                 <Card.Title as="h5">Danilo Celis</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Testing</Card.Subtitle>
@@ -94,7 +96,7 @@ function NosotrosPage() {
           </Col>
           <Col md={4} className="mb-4">
             <Card className="text-center border-0 shadow-sm h-100">
-              <Card.Img variant="top" src="%PUBLIC_URL%/img/matias.jpg" alt="Matias Guzman" className="team-photo" />
+              <Card.Img variant="top" src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/Matias.jpg" alt="Matias Guzman" className="team-photo" />
               <Card.Body>
                 <Card.Title as="h5">Matias Guzman</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Backend</Card.Subtitle>
@@ -104,7 +106,7 @@ function NosotrosPage() {
           </Col>
           <Col md={4} className="mb-4">
             <Card className="text-center border-0 shadow-sm h-100">
-              <Card.Img variant="top" src="%PUBLIC_URL%/img/felipe.jpg" alt="Felipe Quezada" className="team-photo" />
+              <Card.Img variant="top" src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/felipe.jpg" alt="Felipe Quezada" className="team-photo" />
               <Card.Body>
                 <Card.Title as="h5">Felipe Quezada</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Frontend</Card.Subtitle>

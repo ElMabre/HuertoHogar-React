@@ -83,7 +83,7 @@ function MapComponent() {
       ref={mapRef} 
       id="mapa" 
       style={{ height: '400px', width: '100%', backgroundColor: '#e9ecef', borderRadius: '0.375rem' }} 
-t      className="shadow-sm"
+       className="shadow-sm"
     >
       {!isApiLoaded && <div className="text-center p-5">Cargando mapa...</div>}
     </div>

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-// 1. Datos (los movemos aquí desde ProductList.js)
+// 1. Datos de productos iniciales
 const initialProducts = [
   { id: 'FR001', nombre: 'Manzanas Fuji', precio: 1200, categoria: 'frutas', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/manzana.jpg', stock: 150, descripcion: 'Manzanas Fuji crujientes y dulces...', origen: 'Valle del Maule' },
   { id: 'FR002', nombre: 'Naranjas Valencia', precio: 1000, categoria: 'frutas', imagen: 'https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/naranja.jpg', stock: 200, descripcion: 'Jugosas y ricas en vitamina C...', origen: 'Región de Valparaíso' },
@@ -23,7 +23,6 @@ export const useProducts = () => {
 
 // 4. Crear el Proveedor
 export const ProductProvider = ({ children }) => {
-  // Por ahora, los productos son estáticos, pero en el futuro podrían venir de una API
   const [products, setProducts] = useState(initialProducts);
 
   // Función para obtener un solo producto por ID

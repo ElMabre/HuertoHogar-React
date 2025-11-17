@@ -1,10 +1,135 @@
-body {
+/* src/index.css */
+
+/* 1. Reset Global (SOLUCIÓN BARRA BLANCA) */
+/* Este reset universal elimina los márgenes por defecto */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  padding: 0;
+}
+
+/* Asegura que la app ocupe toda la altura */
+html, body, #root {
+  width: 100%;
+  height: 100%;
+}
+
+/* 2. Importación de Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+/* 3. Variables de Color */
+:root {
+  --verde-esmeralda: #2E8B57;
+  --amarillo-mostaza: #FFD700;
+  --marron-claro: #8B4513;
+  --gris-oscuro: #333333;
+  --gris-medio: #666666;
+  --gris-claro: #CCCCCC;
+  --fondo-blanco: #F7F7F7;
+  --fondo-tarjetas: #FFFFFF;
+  --sombra-suave: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --sombra-media: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 4. Estilos Globales y Tipografía */
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: var(--fondo-blanco);
+  color: var(--gris-oscuro);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  color: var(--marron-claro);
+  font-weight: 600;
+}
+
+a {
+  color: var(--verde-esmeralda);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--amarillo-mostaza);
+}
+
+/* 5. Estilos de Componentes (Bootstrap) */
+.section-title {
+  position: relative;
+  padding-bottom: 15px;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: var(--verde-esmeralda);
+}
+
+.card {
+  border: none;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: var(--sombra-suave);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: var(--fondo-tarjetas);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--sombra-media);
+}
+
+.card-title {
+  color: var(--marron-claro);
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: var(--verde-esmeralda) !important;
+  border-color: var(--verde-esmeralda) !important;
+  font-weight: 600;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #256b44 !important;
+  border-color: #256b44 !important;
+}
+
+.btn-warning {
+  background-color: var(--amarillo-mostaza) !important;
+  border-color: var(--amarillo-mostaza) !important;
+  color: var(--gris-oscuro) !important;
+  font-weight: 600;
+}
+.btn-warning:hover,
+.btn-warning:focus {
+  background-color: #e6c200 !important;
+  border-color: #e6c200 !important;
+  color: var(--gris-oscuro) !important;
+}
+
+/* 6. Clases Específicas */
+.team-photo {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin: 1.5rem auto;
+  border: 4px solid var(--verde-esmeralda);
 }
 
 code {

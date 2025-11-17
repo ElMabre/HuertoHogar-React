@@ -1,3 +1,57 @@
+/* src/App.css */
+
+/* Estilos del Hero (Index.html) */
+.hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/hero-bg.jpg') center/cover no-repeat;
+  padding: 100px 0;
+}
+
+/* Animación del logo (Index.html) */
+@keyframes fadeInLogo {
+  from {
+    opacity: 0;
+    transform: translateY(-32px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* SOLUCIÓN LOGO GIGANTE */
+.animate-fade-in {
+  opacity: 0;
+  animation: fadeInLogo 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  animation-delay: 0.2s;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 16px 48px rgba(46, 139, 87, 0.18), 0 3px 16px rgba(0,0,0,0.12);
+  border-radius: 3rem;
+  background: rgba(255,255,255,0.92);
+  padding: 2rem;
+  max-width: 340px; /* Esta línea controla el tamaño */
+  width: 90%;
+  min-width: 200px;
+  margin-bottom: 2.5rem !important;
+}
+
+/* Input de cantidad del carrito (CartPage.js) */
+.input-cantidad-carrito {
+  width: 70px !important;
+  text-align: center;
+}
+
+/* Estilos de las tarjetas de categoría (HomePage.js) */
+.category-card img {
+  transition: transform 0.3s ease;
+}
+
+.category-card:hover img {
+  transform: scale(1.05);
+}
+
+/* --- Estilos por defecto de create-react-app (Puedes borrarlos) --- */
 .App {
   text-align: center;
 }
