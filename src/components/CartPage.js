@@ -3,8 +3,9 @@ import React from 'react';
 import { Container, Row, Col, Card, Table, Button, FormControl, Alert, Image as BsImage } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext'; // Importar el hook del carrito
-
+import useDocumentTitle from '../hooks/useDocumentTitle';
 function CartPage() {
+  useDocumentTitle('Carrito de Compras');
   // Obtener datos y funciones del contexto del carrito
   const {
     cartItems,

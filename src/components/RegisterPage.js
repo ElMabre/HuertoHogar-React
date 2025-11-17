@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, InputGroup, Alert } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom'; // useNavigate para redirigir
-
+import useDocumentTitle from '../hooks/useDocumentTitle';
 // Datos de Regiones y Comunas (de tu registro.html)
 const regionesComunas = {
   "Región Metropolitana": ["Santiago", "Puente Alto", "Maipú"],
@@ -26,6 +26,7 @@ const validarRun = (run) => {
 // -----------------------------------------------------
 
 function RegistrationPage() {
+  useDocumentTitle('Registro');
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',

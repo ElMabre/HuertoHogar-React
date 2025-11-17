@@ -1,26 +1,29 @@
 import React from 'react';
 import { Container, Row, Col, Card, Image, ListGroup } from 'react-bootstrap';
-import MapComponent from './MapComponent'; 
-
+import MapComponent from './MapComponent';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 function NosotrosPage() {
-  return (
-    <Container className="my-5">
+  useDocumentTitle('Nosotros');
+  return (
+    <Container className="my-5">
+      {/* Sección Historia (CORREGIDA) */}
+      {/* CORRECCIÓN 1: Se cambió 'lg={6}' por 'md={6}' 
+        para que se mantenga en 2 columnas en pantallas medianas, 
+        igual que el original. 
+      */}
+      <section className="row align-items-center mb-5">
+        <Col md={6} className="mb-4 mb-md-0"> {/* <-- CORREGIDO DE 'lg' A 'md' */}
+          <h1 className="section-title mb-4">Sobre HuertoHogar</h1>
+          <p className="lead">Conectando a las familias chilenas con el campo desde 2019.</p>
+          <p>HuertoHogar nació con la misión de llevar la frescura y calidad de los productos del campo directamente a la puerta de nuestros clientes en Chile.</p>
+          <p>Nuestra misión es conectar a las familias chilenas con el campo, promoviendo un estilo de vida saludable y sostenible.</p>
+        </Col>
+        <Col md={6}> {/* <-- CORREGIDO DE 'lg' A 'md' */}
+          <Image src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/CampoChileno.avif" alt="Campo chileno" fluid rounded className="shadow" />
+        </Col>
+      </section>
 
-      {/* Sección Historia */}
-      <section className="row align-items-center mb-5">
-        <Col lg={6} className="mb-4 mb-lg-0">
-          <h1 className="section-title mb-4">Sobre HuertoHogar</h1>
-          <p className="lead">Conectando a las familias chilenas con el campo desde 2019.</p>
-          <p>HuertoHogar nació con la misión de llevar la frescura y calidad de los productos del campo directamente a la puerta de nuestros clientes en Chile.</p>
-          <p>Nuestra misión es conectar a las familias chilenas con el campo, promoviendo un estilo de vida saludable y sostenible.</p>
-        </Col>
-        <Col lg={6}>
-          {/* IMAGEN ACTUALIZADA */}
-          <Image src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/CampoChileno.avif" alt="Campo chileno" fluid rounded className="shadow" />
-        </Col>
-      </section>
-
-      {/* Sección Misión y Visión */}
+      {/* Sección Misión y Visión (Sin cambios) */}
       <section className="row mb-5">
         <Col md={6} className="mb-4">
           <Card className="h-100 border-0 shadow-sm text-center p-4">
@@ -46,7 +49,36 @@ function NosotrosPage() {
         </Col>
       </section>
 
-      {/* Sección Tiendas y Mapa */}
+      {/* CORRECCIÓN 2: SECCIÓN "NUESTROS VALORES" AÑADIDA 
+        Esta sección faltaba en tu versión de React.
+      */}
+      <section className="mb-5">
+        <h2 className="text-center section-title mb-4">Nuestros Valores</h2>
+        <Row className="text-center">
+          <Col md={3} xs={6} className="mb-4">
+            <i className="bi bi-tree fs-1 mb-3" style={{ color: 'var(--verde-esmeralda)' }}></i>
+            <h5>Sostenibilidad</h5>
+            <p className="text-muted">Promovemos prácticas agrícolas responsables con el medio ambiente</p>
+          </Col>
+          <Col md={3} xs={6} className="mb-4">
+            <i className="bi bi-heart fs-1 mb-3" style={{ color: 'var(--verde-esmeralda)' }}></i>
+            <h5>Calidad</h5>
+            <p className="text-muted">Productos seleccionados con los más altos estándares de calidad</p>
+          </Col>
+          <Col md={3} xs={6} className="mb-4">
+            <i className="bi bi-people fs-1 mb-3" style={{ color: 'var(--verde-esmeralda)' }}></i>
+            <h5>Comunidad</h5>
+            <p className="text-muted">Apoyamos a agricultores y comunidades locales</p>
+          </Col>
+          <Col md={3} xs={6} className="mb-4">
+            <i className="bi bi-shield-check fs-1 mb-3" style={{ color: 'var(--verde-esmeralda)' }}></i>
+            <h5>Confianza</h5>
+            <p className="text-muted">Transparencia en cada etapa de nuestro proceso</p>
+          </Col>
+        </Row>
+      </section>
+
+      {/* Sección Tiendas y Mapa (Sin cambios) */}
       <section className="mb-5">
         <h2 className="text-center section-title mb-4">Nuestras Tiendas</h2>
         <p className="text-center text-muted mb-4">Contamos con presencia en las principales ciudades de Chile.</p>
@@ -66,7 +98,6 @@ function NosotrosPage() {
               </ListGroup>
             </Card>
           </Col>
-          
           <Col md={6}>
             <Card className="h-100 shadow-sm">
               <Card.Header as="h5" className="bg-success text-white">
@@ -80,7 +111,7 @@ function NosotrosPage() {
         </Row>
       </section>
 
-      {/* Sección Equipo (IMÁGENES ACTUALIZADAS) */}
+      {/* Sección Equipo (Sin cambios) */}
       <section>
         <h2 className="text-center section-title mb-4">Nuestro Equipo</h2>
         <Row>
@@ -116,9 +147,8 @@ function NosotrosPage() {
           </Col>
         </Row>
       </section>
-
-    </Container>
-  );
+    </Container>
+  );
 }
 
 export default NosotrosPage;

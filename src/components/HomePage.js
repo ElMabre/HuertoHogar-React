@@ -1,27 +1,32 @@
 import React from 'react';
 import { Container, Row, Col, Button, Image, Card, InputGroup, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { useProducts } from '../context/ProductContext'; // Importamos el hook de productos
-import ProductCard from './ProductCard'; // Importamos la tarjeta de producto
+import { useProducts } from '../context/ProductContext';
+import ProductCard from './ProductCard';
+import useDocumentTitle from '../hooks/useDocumentTitle'; // <-- 1. IMPORTAR EL HOOK
 
 function HomePage() {
+  // 2. USAR EL HOOK PARA CAMBIAR EL TÍTULO DE LA PESTAÑA
+  useDocumentTitle('Inicio'); 
+
   // Obtenemos los productos destacados de nuestro contexto
   const { getFeaturedProducts } = useProducts();
-  const featuredProducts = getFeaturedProducts(3); // Obtiene los primeros 3
+  const featuredProducts = getFeaturedProducts(3);  // Obtiene los primeros 3
 
   return (
     <>
-      {/* Hero Section (basado en Index.html) */}
+      { /* Hero Section (basado en Index.html) */ }
       <Container fluid className="hero text-white text-center py-5">
         <Row className="justify-content-center py-5">
           <Col lg={8}>
-            <Image 
-              src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/huertohogarlogoconfondo.png" 
-              alt="Logo HuertoHogar" 
-              className="mb-4 mx-auto d-block animate-fade-in" // Asumimos que la animación CSS está en index.css o App.css
+            <Image
+              src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/huertohogarlogoconfondo.png"
+              alt="Logo HuertoHogar"
+              className="mb-4 mx-auto d-block animate-fade-in"  // Asumimos que la animación CSS está en index.css o App.css
             />
             <h1 className="display-4 fw-bold mb-4">¡Bienvenido a HuertoHogar!</h1>
-            <p className="lead mb-5">Productos frescos y naturales directo del campo a tu hogar. Conectamos a las familias chilenas con lo mejor de nuestra tierra.</p>
+            <p className="lead mb-5">Productos frescos y naturales directo del campo a tu hogar.
+            Conectamos a las familias chilenas con lo mejor de nuestra tierra.</p>
             <div className="d-flex gap-3 justify-content-center flex-wrap">
               <Button as={Link} to="/productos" variant="warning" size="lg">Ver Productos</Button>
               <Button as={Link} to="/nosotros" variant="outline-light" size="lg">Conócenos</Button>
@@ -30,7 +35,7 @@ function HomePage() {
         </Row>
       </Container>
 
-      {/* Beneficios Section */}
+      { /* Beneficios Section */ }
       <Container className="py-5">
         <Row className="text-center mb-5">
           <Col>
@@ -69,7 +74,7 @@ function HomePage() {
         </Row>
       </Container>
 
-      {/* Productos Destacados */}
+      { /* Productos Destacados */ }
       <Container fluid className="py-5 bg-light">
         <Container>
           <Row className="text-center mb-5">
@@ -80,7 +85,7 @@ function HomePage() {
           </Row>
           <Row xs={1} md={2} lg={3} className="g-4" id="featuredProducts">
             {featuredProducts.length > 0 ? (
-              featuredProducts.map(product => (
+              featuredProducts.map( product  => (
                 <Col key={product.id}>
                   <ProductCard product={product} />
                 </Col>
@@ -95,7 +100,7 @@ function HomePage() {
         </Container>
       </Container>
 
-      {/* Categorías */}
+      { /* Categorías */ }
       <Container className="py-5">
         <Row className="text-center mb-5">
           <Col>
@@ -139,7 +144,7 @@ function HomePage() {
         </Row>
       </Container>
 
-      {/* Newsletter */}
+      { /* Newsletter */ }
       <Container fluid className="py-5 bg-success text-white">
         <Container>
           <Row className="justify-content-center">

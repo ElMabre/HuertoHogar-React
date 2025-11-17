@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, InputGroup, Alert } from 'react-bootstrap';
-
+import useDocumentTitle from '../hooks/useDocumentTitle';
 // Función de validación (basada en tu validaciones.js)
 const validateEmail = (email) => {
   if (!email) return false;
@@ -10,6 +10,7 @@ const validateEmail = (email) => {
 };
 
 function ContactoPage() {
+  useDocumentTitle('Contacto');
   // Estado para los campos del formulario
   const [formData, setFormData] = useState({
     nombre: '',
