@@ -3,7 +3,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 import { CartProvider } from './context/CartContext';
 import { ProductProvider } from './context/ProductContext';
 import { AuthProvider } from './context/AuthContext'; 
@@ -20,5 +19,3 @@ root.render(
     </AuthProvider>
   </React.StrictMode>
 );
-
-reportWebVitals();

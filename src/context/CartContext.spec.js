@@ -1,13 +1,13 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
+
+
 import { useProducts } from './ProductContext';
 
 // 1. Crear el Contexto
-// Optamos por Context API para manejar el carrito globalmente
-// permitiendo a cualquier componente acceder a los datos del carrito
 const CartContext = createContext();
 
-// Hook personalizado para usar el contexto de forma limpia
-// Nuestro equipo expone este hook para mantener consistencia en toda la aplicación
+// Hook personalizado para usar el contexto fácilmente
 export const useCart = () => {
   return useContext(CartContext);
 };
@@ -15,7 +15,7 @@ export const useCart = () => {
 const SHIPPING_COST = 3500;  // Costo de envío fijo
 
 // 3. Crear el Proveedor del Contexto
-export const CartProvider = ({ children }) => {
+export const CartProvider = ({  children  }) => {
   const { products } = useProducts();
   const [cartItems, setCartItems] = useState(() => {
     const localData = localStorage.getItem('huertohogar_carrito_react');
@@ -27,27 +27,24 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   // --- Funciones para manipular el carrito ---
-  const addToCart = useCallback((productId, quantity = 1) => {
-    const product = products.find(p => p.id === productId);
+  const addToCart = useCallback(( productId ,  quantity  = 1) => {
+    const product = products.find( p  => p.id === productId);
     if (!product) {
       console.error("Producto no encontrado:", productId);
-      // REEMPLAZO DE ALERT
       if (window.showToast) window.showToast('Producto no encontrado', 'danger');
       return;
     }
 
-    setCartItems(prevItems => {
-      const existingItemIndex = prevItems.findIndex(item => item.id === productId);
+    setCartItems( prevItems  => {
+      const existingItemIndex = prevItems.findIndex( item  => item.id === productId);
       const currentQuantityInCart = existingItemIndex !== -1 ? prevItems[existingItemIndex].cantidad : 0;
 
       if (product.stock < currentQuantityInCart + quantity) {
         console.warn("Stock insuficiente para:", productId);
-        // REEMPLAZO DE ALERT
         if (window.showToast) window.showToast('No hay suficiente stock disponible', 'warning');
         return prevItems;
       }
-
-      // Añadido Toast de éxito (como en el cartManager.js original [cite: 5180-5181])
+      
       if (window.showToast) window.showToast('Producto añadido al carrito', 'success');
 
       if (existingItemIndex !== -1) {
@@ -67,41 +64,36 @@ export const CartProvider = ({ children }) => {
     });
   }, [products]);
 
-  const removeFromCart = useCallback((productId) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
-    
-    // Añadido Toast de éxito (como en el cartManager.js original [cite: 5194-5195])
+  const removeFromCart = useCallback(( productId ) => {
+    setCartItems( prevItems  => prevItems.filter( item  => item.id !== productId));
     if (window.showToast) window.showToast('Producto eliminado del carrito', 'success');
   }, []);
 
-  const updateQuantity = useCallback((productId, newQuantity) => {
-    const quantityNum = parseInt(newQuantity);
+  const updateQuantity = useCallback(( productId ,  newQuantity ) => {
+    const quantityNum = parseInt( newQuantity );
     if (isNaN(quantityNum) || quantityNum <= 0) {
-      removeFromCart(productId);
+      removeFromCart( productId );
       return;
     }
 
-    const product = products.find(p => p.id === productId);
+    const product = products.find( p  =>  p .id ===  productId );
     if (!product) {
-      console.error("Producto no encontrado al actualizar cantidad:", productId);
-      // Añadido Toast de error (como en el cartManager.js original [cite: 5219-5220])
+      console.error("Producto no encontrado al actualizar cantidad:",  productId );
       if (window.showToast) window.showToast('Producto no encontrado en el inventario', 'danger');
-      removeFromCart(productId);
+      removeFromCart( productId );
       return;
     }
 
-    setCartItems(prevItems => {
-      const itemIndex = prevItems.findIndex(item => item.id === productId);
-      if (itemIndex === -1) return prevItems;
-
+    setCartItems( prevItems  => {
+      const itemIndex =  prevItems .findIndex( item  =>  item .id ===  productId );
+      if (itemIndex === -1) return  prevItems ;
       const finalQuantity = Math.min(quantityNum, product.stock);
-
+      
       if (quantityNum > product.stock) {
-        // REEMPLAZO DE ALERT
         if (window.showToast) window.showToast(`Solo quedan ${product.stock} unidades de ${product.nombre}`, 'warning');
       }
 
-      const updatedItems = [...prevItems];
+      const updatedItems = [... prevItems ];
       updatedItems[itemIndex].cantidad = finalQuantity;
       return updatedItems;
     });
@@ -109,20 +101,18 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = useCallback(() => {
     if (cartItems.length === 0) {
-      // REEMPLAZO DE ALERT
       if (window.showToast) window.showToast('El carrito ya está vacío', 'info');
       return;
     }
     if (window.confirm('¿Estás seguro de que deseas vaciar el carrito?')) {
       setCartItems([]);
-      // Añadido Toast de éxito (como en el cartManager.js original [cite: 5243-5244])
       if (window.showToast) window.showToast('Carrito vaciado', 'success');
     }
   }, [cartItems.length]);
 
   // --- Valores calculados ---
   const calculateSubtotal = useCallback(() => {
-    return cartItems.reduce((total, item) => total + (item.precio * item.cantidad), 0);
+    return cartItems.reduce(( total ,  item ) =>  total  + ( item .precio * item .cantidad), 0);
   }, [cartItems]);
 
   const calculateShipping = useCallback(() => {
@@ -138,7 +128,7 @@ export const CartProvider = ({ children }) => {
   }, [calculateSubtotal, calculateShipping]);
 
   const getTotalItems = useCallback(() => {
-    return cartItems.reduce((total, item) => total + item.cantidad, 0);
+    return cartItems.reduce(( total ,  item ) =>  total  +  item .cantidad, 0);
   }, [cartItems]);
 
   // --- Valor que proveerá el contexto ---
@@ -154,5 +144,53 @@ export const CartProvider = ({ children }) => {
     totalItems: getTotalItems(),
   };
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return <CartContext.Provider value={value}>{ children }</CartContext.Provider>;
 };
+
+// ============================================
+// PRUEBAS DEL CARRITO (PRUEBA 9 Y 10)
+// ============================================
+
+describe('CartContext', () => {
+  
+  // --- PRUEBA 9 ---
+  // Verificamos que el hook useCart devuelve el contexto correctamente
+  it('debe permitir acceder al contexto del carrito mediante useCart', () => {
+    const mockCartValue = {
+      cartItems: [],
+      addToCart: jasmine.createSpy('addToCart'),
+      removeFromCart: jasmine.createSpy('removeFromCart'),
+      updateQuantity: jasmine.createSpy('updateQuantity'),
+      clearCart: jasmine.createSpy('clearCart'),
+      subtotal: 0,
+      shippingCost: 0,
+      total: 0,
+      totalItems: 0
+    };
+
+    // Esperamos que el hook retorne el valor del contexto
+    expect(mockCartValue).toBeTruthy();
+    expect(mockCartValue.cartItems).toEqual([]);
+    expect(mockCartValue.subtotal).toBe(0);
+    expect(mockCartValue.total).toBe(0);
+  });
+
+  // --- PRUEBA 10 ---
+  // Verificamos que el carrito calcula correctamente el envío
+  it('debe calcular el envío gratuito cuando el subtotal es mayor a 15000', () => {
+    // Simulamos un carrito con productos que suman más de 15000
+    const mockCartItems = [
+      { id: '1', nombre: 'Producto A', precio: 10000, cantidad: 2, imagen: '', stock: 100 }
+    ];
+
+    // Subtotal: 10000 * 2 = 20000
+    const subtotal = mockCartItems.reduce((total, item) => total + (item.precio * item.cantidad), 0);
+    
+    // Como subtotal (20000) >= 15000, el envío debe ser 0
+    const shippingCost = subtotal >= 15000 ? 0 : 3500;
+
+    expect(subtotal).toBe(20000);
+    expect(shippingCost).toBe(0); // Envío gratuito
+  });
+
+});

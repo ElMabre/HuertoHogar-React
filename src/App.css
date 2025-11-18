@@ -1,8 +1,9 @@
 /* src/App.css */
-
 /* Estilos del Hero (Index.html) */
 .hero {
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/hero-bg.jpg') center/cover no-repeat;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/hero-bg.jpg')
+      center/cover no-repeat;
   padding: 100px 0;
 }
 
@@ -18,7 +19,6 @@
   }
 }
 
-/* SOLUCIÓN LOGO GIGANTE */
 .animate-fade-in {
   opacity: 0;
   animation: fadeInLogo 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
@@ -26,9 +26,10 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
-  box-shadow: 0 16px 48px rgba(46, 139, 87, 0.18), 0 3px 16px rgba(0,0,0,0.12);
+  box-shadow: 0 16px 48px rgba(46, 139, 87, 0.18),
+    0 3px 16px rgba(0, 0, 0, 0.12);
   border-radius: 3rem;
-  background: rgba(255,255,255,0.92);
+  background: rgba(255, 255, 255, 0.92);
   padding: 2rem;
   max-width: 340px; /* Esta línea controla el tamaño */
   width: 90%;
@@ -49,44 +50,4 @@
 
 .category-card:hover img {
   transform: scale(1.05);
-}
-
-/* --- Estilos por defecto de create-react-app (Puedes borrarlos) --- */
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }

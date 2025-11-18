@@ -1,8 +1,9 @@
+// 1. IMPORTACIONES ACTUALIZADAS
 import React, { useState } from 'react';
-import { Container, Button, Table, Badge } from 'react-bootstrap';
+import { Container, Button, Table, Badge, Modal, Form, ListGroup, Row, Col } from 'react-bootstrap';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-// --- Datos de pedidos (migrado de admin.js loadOrders) ---
-// Para la Evaluación 3, esto vendrá de una API.
+
+// 2. DATOS SIMULADOS ACTUALIZADOS (con productos)
 const initialOrdersData = [
   {
     id: 'PED-001',
@@ -10,40 +11,60 @@ const initialOrdersData = [
     fecha: '2024-03-20',
     total: 45000,
     estado: 'Completado',
-    metodoPago: 'Tarjeta'
-  }, // [cite: 2592-2599]
+    metodoPago: 'Tarjeta',
+    productos: [
+      { id: 'FR001', nombre: 'Manzanas Fuji', cantidad: 3, precio: 1200 },
+      { id: 'PO001', nombre: 'Miel Orgánica', cantidad: 1, precio: 5000 },
+      { id: 'VR001', nombre: 'Zanahorias', cantidad: 2, precio: 900 }
+    ]
+  },
   {
     id: 'PED-002',
     cliente: 'María González',
     fecha: '2024-03-19',
     total: 28000,
     estado: 'Pendiente',
-    metodoPago: 'Transferencia'
-  }, // [cite: 2600-2608]
+    metodoPago: 'Transferencia',
+    productos: [
+      { id: 'FR002', nombre: 'Naranjas Valencia', cantidad: 5, precio: 1000 },
+      { id: 'PL001', nombre: 'Leche Entera', cantidad: 2, precio: 1200 }
+    ]
+  },
   {
     id: 'PED-003',
     cliente: 'Pedro Martínez',
     fecha: '2024-03-18',
     total: 15000,
     estado: 'En camino',
-    metodoPago: 'Tarjeta'
-  }, // [cite: 2609-2618]
+    metodoPago: 'Tarjeta',
+    productos: [
+      { id: 'VR002', nombre: 'Espinacas Frescas', cantidad: 4, precio: 700 }
+    ]
+  },
   {
     id: 'PED-004',
     cliente: 'Ana López',
     fecha: '2024-03-17',
     total: 32000,
     estado: 'Completado',
-    metodoPago: 'Efectivo'
-  } // [cite: 2619-2624]
+    metodoPago: 'Efectivo',
+    productos: [
+      { id: 'VR003', nombre: 'Pimientos Tricolores', cantidad: 2, precio: 1500 }
+    ]
+  }
 ];
 // --- Fin de datos ---
 
 function AdminPedidos() {
-    useDocumentTitle('Admin: Pedidos');
+  useDocumentTitle('Admin: Pedidos');
   const [orders, setOrders] = useState(initialOrdersData);
 
-  // --- Lógica para el color del Badge (migrado de admin.js getBadgeClass) ---
+  // 3. ESTADOS PARA LOS MODALS
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  // --- Lógica para el color del Badge ---
   const getBadgeClass = (estado) => {
     const classes = {
       'Completado': 'bg-success',
@@ -51,29 +72,58 @@ function AdminPedidos() {
       'En camino': 'bg-info',
       'Cancelado': 'bg-danger'
     };
-    return classes[estado] || 'bg-secondary'; // [cite: 2655-2661]
+    return classes[estado] || 'bg-secondary';
   };
 
-  // --- Lógica de botones (migrado de admin.js) ---
+  // 4. FUNCIONES MODIFICADAS (Abren Modals en lugar de Toasts)
   const handleViewOrder = (id) => {
-    alert(`Viendo pedido: ${id}`); // [cite: 2702-2704]
-    // Aquí iría la lógica para mostrar un modal con el detalle del pedido
+    const order = orders.find(o => o.id === id);
+    setSelectedOrder(order);
+    setShowViewModal(true);
   };
 
   const handleEditOrder = (id) => {
-    alert(`Editando pedido: ${id}`); // [cite: 2707-2709]
-    // Aquí iría la lógica para editar el estado del pedido
+    const order = orders.find(o => o.id === id);
+    setSelectedOrder(order);
+    setShowEditModal(true);
   };
+
+  const handleCloseModals = () => {
+    setShowViewModal(false);
+    setShowEditModal(false);
+    setSelectedOrder(null);
+  };
+
+  // 5. NUEVA FUNCIÓN PARA GUARDAR EL ESTADO DEL PEDIDO
+  const handleSaveStatus = (e) => {
+    e.preventDefault();
+    if (!selectedOrder) return;
+
+    const formData = new FormData(e.target);
+    const newStatus = formData.get('orderStatus');
+
+    // Simular la actualización en el estado local
+    setOrders(prevOrders =>
+      prevOrders.map(order =>
+        order.id === selectedOrder.id ? { ...order, estado: newStatus } : order
+      )
+    );
+
+    // Mostrar notificación de éxito
+    if (window.showToast) {
+      window.showToast('Estado del pedido actualizado', 'success');
+    }
+
+    handleCloseModals();
+  };
+
 
   return (
     <Container fluid>
-      {/* Encabezado y filtros [cite: 4374-4378] */}
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 className="h2">Gestión de Pedidos</h1>
-        {/* Aquí podrías añadir el Dropdown de filtros si lo necesitas */}
       </div>
 
-      {/* Tabla de Pedidos (migrado de admin.html y admin.js) [cite: 4378-4383] */}
       <div className="table-responsive">
         <Table striped hover>
           <thead>
@@ -101,16 +151,16 @@ function AdminPedidos() {
                 </td>
                 <td>{pedido.metodoPago}</td>
                 <td>
-                  <Button 
-                    variant="outline-primary" 
-                    size="sm" 
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
                     className="me-1"
                     onClick={() => handleViewOrder(pedido.id)}
                   >
                     <i className="bi bi-eye"></i>
                   </Button>
-                  <Button 
-                    variant="outline-success" 
+                  <Button
+                    variant="outline-success"
                     size="sm"
                     onClick={() => handleEditOrder(pedido.id)}
                   >
@@ -122,6 +172,83 @@ function AdminPedidos() {
           </tbody>
         </Table>
       </div>
+
+      {/* 6. AÑADIR LOS MODALS */}
+      
+      {/* Modal para Ver Pedido */}
+      <Modal show={showViewModal} onHide={handleCloseModals} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Detalle del Pedido: {selectedOrder?.id}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedOrder && (
+            <Row>
+              <Col md={6}>
+                <h5>Información del Cliente</h5>
+                <ListGroup variant="flush">
+                  <ListGroup.Item><strong>Cliente:</strong> {selectedOrder.cliente}</ListGroup.Item>
+                  <ListGroup.Item><strong>Fecha:</strong> {selectedOrder.fecha}</ListGroup.Item>
+                  <ListGroup.Item><strong>Método Pago:</strong> {selectedOrder.metodoPago}</ListGroup.Item>
+                  <ListGroup.Item>
+                    <strong>Estado:</strong>
+                    <Badge className={`ms-2 ${getBadgeClass(selectedOrder.estado)}`}>
+                      {selectedOrder.estado}
+                    </Badge>
+                  </ListGroup.Item>
+                  <ListGroup.Item><strong>Total:</strong> ${selectedOrder.total.toLocaleString('es-CL')}</ListGroup.Item>
+                </ListGroup>
+              </Col>
+              <Col md={6}>
+                <h5>Productos del Pedido</h5>
+                <ListGroup variant="flush">
+                  {selectedOrder.productos?.map(prod => (
+                    <ListGroup.Item key={prod.id} className="d-flex justify-content-between">
+                      <span>{prod.nombre} (x{prod.cantidad})</span>
+                      <span>${(prod.precio * prod.cantidad).toLocaleString('es-CL')}</span>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              </Col>
+            </Row>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModals}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal para Editar Pedido (Estado) */}
+      <Modal show={showEditModal} onHide={handleCloseModals}>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Pedido: {selectedOrder?.id}</Modal.Title>
+        </Modal.Header>
+        <Form onSubmit={handleSaveStatus}>
+          <Modal.Body>
+            <p><strong>Cliente:</strong> {selectedOrder?.cliente}</p>
+            <p><strong>Total:</strong> ${selectedOrder?.total.toLocaleString('es-CL')}</p>
+            <Form.Group controlId="orderStatus">
+              <Form.Label>Cambiar Estado del Pedido</Form.Label>
+              <Form.Select name="orderStatus" defaultValue={selectedOrder?.estado} required>
+                <option value="Pendiente">Pendiente</option>
+                <option value="En camino">En camino</option>
+                <option value="Completado">Completado</option>
+                <option value="Cancelado">Cancelado</option>
+              </Form.Select>
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseModals}>
+              Cancelar
+            </Button>
+            <Button variant="success" type="submit">
+              Guardar Estado
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+      
     </Container>
   );
 }

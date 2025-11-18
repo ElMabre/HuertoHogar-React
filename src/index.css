@@ -1,5 +1,4 @@
 /* src/index.css */
-
 /* 1. Reset Global */
 *,
 *::before,
@@ -24,12 +23,10 @@
   --fondo-tarjetas: #FFFFFF;
   --sombra-suave: 0 4px 6px rgba(0, 0, 0, 0.1);
   --sombra-media: 0 6px 12px rgba(0, 0, 0, 0.15);
-  --footer-dark: #343a40; /* Variable para el color del footer */
+  --footer-dark: #343a40;  /* Variable para el color del footer */
 }
 
-
 /* 4. *** INICIO DE LA CORRECCIÓN DE OVER-SCROLL *** */
-
 /* Pone el color del NAVBAR en el fondo superior (overscroll hacia arriba) */
 html {
   background-color: var(--verde-esmeralda);
@@ -38,25 +35,32 @@ html {
 
 /* Pone el color del FOOTER en el fondo inferior (overscroll hacia abajo) */
 body {
-  font-family: 'Montserrat', sans-serif;
-  background-color: var(--footer-dark); /* Color del Footer */
-  color: var(--gris-oscuro);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden; /* Mantiene la corrección del scroll horizontal */
+  background-color: var(--footer-dark);  /* Color del Footer */
+  overflow-x: hidden;  /* Mantiene la corrección del scroll horizontal */
   height: 100%;
+  
+  /* Esto aniquila cualquier texto fantasma (caracteres BOM) */
+  font-size: 0;
 }
 
 /* Pone el color del CONTENIDO (blanco/gris claro) en el contenedor de React */
 #root {
-  background-color: var(--fondo-blanco); /* Color del contenido */
-  min-height: 100%; /* Asegura que ocupe al menos toda la pantalla */
+  background-color: var(--fondo-blanco);  /* Color del contenido */
+  min-height: 100%;  /* Asegura que ocupe al menos toda la pantalla */
   width: 100%;
+
+  /* --- ESTILOS MOVIDOS DESDE BODY --- */
+  font-family: 'Montserrat', sans-serif;
+  color: var(--gris-oscuro);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Resetea el tamaño de fuente que anulamos en <body> */
+  font-size: 1rem; 
 }
+
 /* *** FIN DE LA CORRECCIÓN *** */
-
-
 /* 5. Estilos Globales y Tipografía (restaurados) */
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Playfair Display', serif;
@@ -117,24 +121,28 @@ a:hover {
   border-color: var(--verde-esmeralda) !important;
   font-weight: 600;
 }
+
 .btn-primary:hover,
 .btn-primary:focus {
   background-color: #256b44 !important;
   border-color: #256b44 !important;
 }
 
+/* --- INICIO DE LA CORRECCIÓN DEL TYPO --- */
 .btn-warning {
   background-color: var(--amarillo-mostaza) !important;
   border-color: var(--amarillo-mostaza) !important;
   color: var(--gris-oscuro) !important;
   font-weight: 600;
 }
+
 .btn-warning:hover,
 .btn-warning:focus {
   background-color: #e6c200 !important;
   border-color: #e6c200 !important;
   color: var(--gris-oscuro) !important;
 }
+/* --- FIN DE LA CORRECCIÓN DEL TYPO --- */
 
 /* 7. Clases Específicas */
 .team-photo {

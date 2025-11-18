@@ -1,20 +1,23 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 // 1. Crear el Contexto
-const AuthContext = createContext();
+// Nosotros optamos por usar Context API para manejar la autenticación globalmente
+// permitiendo acceso al usuario actual desde cualquier componente sin prop drilling
+export const AuthContext = createContext();
 
 // 2. Hook personalizado para consumir el contexto
+// Nuestro equipo decide exponer este hook para que los componentes accedan
+// a la autenticación de forma limpia y consistente
 export const useAuth = () => {
   return useContext(AuthContext);
 };
 
 // 3. Provider (El componente que maneja toda la lógica)
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({  children  }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Estado para saber si ya verificamos localStorage
+  const [loading, setLoading] = useState(true);
 
   // 4. Verificar si hay un usuario logueado en localStorage al cargar la app
-  // (Esto evita que el usuario se "desloguee" al recargar la página)
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('currentUser');
@@ -25,21 +28,22 @@ export const AuthProvider = ({ children }) => {
       console.error("Error al leer 'currentUser' de localStorage", e);
       localStorage.removeItem('currentUser');
     }
-    setLoading(false); // Terminamos de verificar
+    setLoading(false);
   }, []);
 
- // ... (imports, createContext, useAuth, AuthProvider, useState, useEffect) ...
-
-  // 5. Función de Login (CON CONSOLE.LOGS)
-  const login = (email, pass) => {
-    console.log("Intentando iniciar sesión con:", email, pass); // <-- LOG 1
+  // 5. Función de Login
+  // Nuestro equipo implementó la lógica para buscar el usuario en un array combinado
+  // de administradores hardcodeados y usuarios registrados desde localStorage
+  const login = ( email ,  pass ) => {
     try {
+      // Datos de administradores predefinidos por el cliente
       const admins = [
         { nombre: 'Felipe Quezada', email: 'felipe@huerto.hogar', pass: 'felipe1234', rol: 'admin' },
         { nombre: 'Matias Guzman', email: 'matias@huerto.hogar', pass: 'matias1234', rol: 'admin' },
         { nombre: 'Danilo Celis', email: 'danilo@huerto.hogar', pass: 'danilo1234', rol: 'admin' }
       ];
       
+      // Recuperamos usuarios registrados del almacenamiento local
       let usersFromStorage = [];
       try {
         const storedUsers = localStorage.getItem('users');
@@ -48,81 +52,75 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (e) {
          console.error("Error al parsear 'users' de localStorage:", e);
-         // Continuar solo con admins si 'users' está corrupto
       }
-
-      console.log("Usuarios de localStorage:", usersFromStorage); // <-- LOG 2
-      console.log("Admins definidos:", admins); // <-- LOG 3
-
+      
+      // Combinamos administradores y usuarios para búsqueda
       const allUsers = usersFromStorage.concat(admins);
-      console.log("Lista completa de usuarios (allUsers):", allUsers); // <-- LOG 4
       
-      // Busca exactamente email Y contraseña
-      const user = allUsers.find(u => u.email === email && u.pass === pass);
-      
-      console.log("Usuario encontrado:", user); // <-- LOG 5
-      
+      // Buscamos el usuario que coincida con email y contraseña
+      const user = allUsers.find( u  =>  u .email ===  email  &&  u .pass ===  pass );
+            
       if (user) {
+        // Guardamos el usuario en localStorage para persistencia entre sesiones
         localStorage.setItem('currentUser', JSON.stringify(user));
         setCurrentUser(user);
         return user;
       }
-      return null; // Credenciales incorrectas
+      return null;
     } catch (e) {
       console.error("Error inesperado en login:", e);
       return null;
     }
   };
 
-// ... (logout, register, value, return) ...
-
-  // 6. Función de Logout (lógica de auth.js)
+  // 6. Función de Logout
+  // Limpiamos tanto el estado local como el almacenamiento persistente
   const logout = () => {
     localStorage.removeItem('currentUser');
     setCurrentUser(null);
   };
   
-  // 7. Función de Registro (lógica de registro.js)
-  const register = (userData) => {
-      // (userData viene del formulario de RegistrationPage)
+  // 7. Función de Registro
+  // Nuestro equipo diseñó esta función para validar que no existan duplicados
+  // de email ni RUN, y luego guardar el nuevo usuario en localStorage
+  const register = ( userData ) => {
      try {
+        // Recuperamos usuarios existentes o iniciamos array vacío
         const users = JSON.parse(localStorage.getItem('users')) || [];
         
-        // Validar si el email ya existe
-        if (users.some(user => user.email === userData.email)) {
+        // Validamos que el email no esté ya en uso
+        if (users.some( user  =>  user .email ===  userData .email)) {
           throw new Error("El correo electrónico ya está en uso.");
         }
         
-        // Validar si el RUN ya existe
-        if (users.some(user => user.run === userData.run)) {
+        // Validamos que el RUN no esté ya registrado
+        if (users.some( user  =>  user .run ===  userData .run)) {
           throw new Error("El RUN ya está registrado en el sistema.");
         }
-
-        // Crear nuevo usuario
+        
+        // Creamos el objeto del nuevo usuario con los datos completos
         const newUser = {
-          nombre: `${userData.nombre} ${userData.apellido}`,
-          run: userData.run,
-          email: userData.email,
-          pass: userData.password, // En un caso real, esto debería estar hasheado
-          region: userData.region,
-          comuna: userData.comuna,
-          direccion: userData.direccion,
+          nombre: `${ userData .nombre} ${ userData .apellido}`,
+          run:  userData .run,
+          email:  userData .email,
+          pass:  userData .password,
+          region:  userData .region,
+          comuna:  userData .comuna,
+          direccion:  userData .direccion,
           fechaRegistro: new Date().toISOString(),
           rol: 'cliente'
         };
-
+        
+        // Guardamos el nuevo usuario en la lista
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
         
-        // Login automático después de registrarse
+        // Automáticamente logueamos al usuario tras su registro
         localStorage.setItem('currentUser', JSON.stringify(newUser));
         setCurrentUser(newUser);
-
         return newUser;
-
      } catch (error) {
         console.error("Error al registrar:", error);
-        // Re-lanzar el error para que el formulario de registro lo atrape
         throw error; 
      }
   };
@@ -136,7 +134,6 @@ export const AuthProvider = ({ children }) => {
     register
   };
 
-  // No renderizar los hijos hasta que hayamos verificado el localStorage
   return (
     <AuthContext.Provider value={value}>
       {!loading && children}
