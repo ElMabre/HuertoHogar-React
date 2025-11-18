@@ -12,7 +12,6 @@ function ProductCard({ product }) {
 
   const handleAddToCart = () => {
     if (product && product.stock > 0) {
-      // Esta función ya utiliza el window.showToast (del CartContext)
       addToCart(product.id, 1);
     }
   };
@@ -36,30 +35,25 @@ function ProductCard({ product }) {
         />
       </Link>
       <Card.Body className="d-flex flex-column">
-        
         <Card.Title style={{ color: "#8B4513" }}>{product.nombre}</Card.Title>
+        
         <Card.Text>
-          {/* Esto usará la nueva descripción larga y la acortará */}
           {product.descripcion
             ? `${product.descripcion.substring(0, 80)}...`
             : "Descripción no disponible."}
         </Card.Text>
-        
-        {/* --- INICIO DE LA MODIFICACIÓN --- */}
-        {/* Precio y Unidad */}
+
         <div className="mb-2">
           <span className="fw-bold fs-5" style={{ color: "#2E8B57" }}>
             ${product.precio ? product.precio.toLocaleString("es-CL") : "N/A"}
           </span>
-          {/* Mostramos la unidad de medida */}
           {product.unidad && (
             <span className="text-muted ms-1" style={{ fontSize: '0.9rem' }}>
               {product.unidad}
             </span>
           )}
         </div>
-        
-        {/* Categoría y Origen (reorganizado para mejor legibilidad) */}
+
         <div className="d-flex justify-content-between align-items-center mb-3">
           {product.categoria && (
             <Badge bg="secondary">{product.categoria}</Badge>
@@ -70,7 +64,6 @@ function ProductCard({ product }) {
             </small>
           )}
         </div>
-        {/* --- FIN DE LA MODIFICACIÓN --- */}
 
         <div className="mt-auto d-grid gap-2">
           <Button

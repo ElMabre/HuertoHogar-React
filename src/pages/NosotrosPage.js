@@ -2,28 +2,26 @@ import React from 'react';
 import { Container, Row, Col, Card, Image, ListGroup } from 'react-bootstrap';
 import MapComponent from '../components/MapComponent';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+
 function NosotrosPage() {
   useDocumentTitle('Nosotros');
+
   return (
     <Container className="my-5">
-      {/* Sección Historia (CORREGIDA) */}
-      {/* CORRECCIÓN 1: Se cambió 'lg={6}' por 'md={6}' 
-        para que se mantenga en 2 columnas en pantallas medianas, 
-        igual que el original. 
-      */}
+      {/* Historia */}
       <section className="row align-items-center mb-5">
-        <Col md={6} className="mb-4 mb-md-0"> {/* <-- CORREGIDO DE 'lg' A 'md' */}
+        <Col md={6} className="mb-4 mb-md-0">
           <h1 className="section-title mb-4">Sobre HuertoHogar</h1>
           <p className="lead">Conectando a las familias chilenas con el campo desde 2019.</p>
           <p>HuertoHogar nació con la misión de llevar la frescura y calidad de los productos del campo directamente a la puerta de nuestros clientes en Chile.</p>
           <p>Nuestra misión es conectar a las familias chilenas con el campo, promoviendo un estilo de vida saludable y sostenible.</p>
         </Col>
-        <Col md={6}> {/* <-- CORREGIDO DE 'lg' A 'md' */}
+        <Col md={6}>
           <Image src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/CampoChileno.avif" alt="Campo chileno" fluid rounded className="shadow" />
         </Col>
       </section>
 
-      {/* Sección Misión y Visión (Sin cambios) */}
+      {/* Misión y Visión */}
       <section className="row mb-5">
         <Col md={6} className="mb-4">
           <Card className="h-100 border-0 shadow-sm text-center p-4">
@@ -42,16 +40,14 @@ function NosotrosPage() {
               <i className="bi bi-eye display-4 mb-3" style={{ color: '#2E8B57' }}></i>
               <Card.Title as="h3">Visión</Card.Title>
               <Card.Text>
-                Ser la tienda online líder en la distribución de productos frescos y naturales en Chile, reconocida por nuestra calidad excepcional... y compromiso con la sostenibilidad.
+                Ser la tienda online líder en la distribución de productos frescos y naturales en Chile, reconocida por nuestra calidad excepcional, servicio al cliente y compromiso con la sostenibilidad.
               </Card.Text>
             </Card.Body>
           </Card>
         </Col>
       </section>
 
-      {/* CORRECCIÓN 2: SECCIÓN "NUESTROS VALORES" AÑADIDA 
-        Esta sección faltaba en tu versión de React.
-      */}
+      {/* Valores */}
       <section className="mb-5">
         <h2 className="text-center section-title mb-4">Nuestros Valores</h2>
         <Row className="text-center">
@@ -78,7 +74,7 @@ function NosotrosPage() {
         </Row>
       </section>
 
-      {/* Sección Tiendas y Mapa (Sin cambios) */}
+      {/* Ubicaciones y Mapa */}
       <section className="mb-5">
         <h2 className="text-center section-title mb-4">Nuestras Tiendas</h2>
         <p className="text-center text-muted mb-4">Contamos con presencia en las principales ciudades de Chile.</p>
@@ -103,7 +99,7 @@ function NosotrosPage() {
               <Card.Header as="h5" className="bg-success text-white">
                 <i className="bi bi-map me-2"></i>Mapa de Ubicaciones
               </Card.Header>
-              <Card.Body className="p-0" style={{minHeight: '400px'}}>
+              <Card.Body className="p-0" style={{ minHeight: '400px' }}>
                 <MapComponent />
               </Card.Body>
             </Card>
@@ -111,7 +107,7 @@ function NosotrosPage() {
         </Row>
       </section>
 
-      {/* Sección Equipo (Sin cambios) */}
+      {/* Equipo */}
       <section>
         <h2 className="text-center section-title mb-4">Nuestro Equipo</h2>
         <Row>
@@ -121,7 +117,7 @@ function NosotrosPage() {
               <Card.Body>
                 <Card.Title as="h5">Danilo Celis</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Testing</Card.Subtitle>
-                <Card.Text>Estudiante De Ingenieria Informatica.</Card.Text>
+                <Card.Text>Estudiante De Ingeniería Informática.</Card.Text>
               </Card.Body>
             </Card>
           </Col>
@@ -131,7 +127,7 @@ function NosotrosPage() {
               <Card.Body>
                 <Card.Title as="h5">Matias Guzman</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Backend</Card.Subtitle>
-                <Card.Text>Estudiante De Ingenieria Informatica.</Card.Text>
+                <Card.Text>Estudiante De Ingeniería Informática.</Card.Text>
               </Card.Body>
             </Card>
           </Col>
@@ -141,7 +137,7 @@ function NosotrosPage() {
               <Card.Body>
                 <Card.Title as="h5">Felipe Quezada</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Frontend</Card.Subtitle>
-                <Card.Text>Estudiante De Ingenieria Informatica.</Card.Text>
+                <Card.Text>Estudiante De Ingeniería Informática.</Card.Text>
               </Card.Body>
             </Card>
           </Col>

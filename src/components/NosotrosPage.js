@@ -6,11 +6,6 @@ function NosotrosPage() {
   useDocumentTitle('Nosotros');
   return (
     <Container className="my-5">
-      {/* Sección Historia (CORREGIDA) */}
-      {/* CORRECCIÓN 1: Se cambió 'lg={6}' por 'md={6}' 
-        para que se mantenga en 2 columnas en pantallas medianas, 
-        igual que el original. 
-      */}
       <section className="row align-items-center mb-5">
         <Col md={6} className="mb-4 mb-md-0"> {/* <-- CORREGIDO DE 'lg' A 'md' */}
           <h1 className="section-title mb-4">Sobre HuertoHogar</h1>
@@ -18,12 +13,10 @@ function NosotrosPage() {
           <p>HuertoHogar nació con la misión de llevar la frescura y calidad de los productos del campo directamente a la puerta de nuestros clientes en Chile.</p>
           <p>Nuestra misión es conectar a las familias chilenas con el campo, promoviendo un estilo de vida saludable y sostenible.</p>
         </Col>
-        <Col md={6}> {/* <-- CORREGIDO DE 'lg' A 'md' */}
+        <Col md={6}> 
           <Image src="https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/CampoChileno.avif" alt="Campo chileno" fluid rounded className="shadow" />
         </Col>
       </section>
-
-      {/* Sección Misión y Visión (Sin cambios) */}
       <section className="row mb-5">
         <Col md={6} className="mb-4">
           <Card className="h-100 border-0 shadow-sm text-center p-4">
@@ -48,10 +41,6 @@ function NosotrosPage() {
           </Card>
         </Col>
       </section>
-
-      {/* CORRECCIÓN 2: SECCIÓN "NUESTROS VALORES" AÑADIDA 
-        Esta sección faltaba en tu versión de React.
-      */}
       <section className="mb-5">
         <h2 className="text-center section-title mb-4">Nuestros Valores</h2>
         <Row className="text-center">
@@ -78,7 +67,6 @@ function NosotrosPage() {
         </Row>
       </section>
 
-      {/* Sección Tiendas y Mapa (Sin cambios) */}
       <section className="mb-5">
         <h2 className="text-center section-title mb-4">Nuestras Tiendas</h2>
         <p className="text-center text-muted mb-4">Contamos con presencia en las principales ciudades de Chile.</p>
@@ -111,7 +99,6 @@ function NosotrosPage() {
         </Row>
       </section>
 
-      {/* Sección Equipo (Sin cambios) */}
       <section>
         <h2 className="text-center section-title mb-4">Nuestro Equipo</h2>
         <Row>

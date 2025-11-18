@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, InputGroup, Alert } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom'; // useNavigate para redirigir
+import { Link, useNavigate } from 'react-router-dom';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-// Datos de Regiones y Comunas (de tu registro.html)
+import { useAuth } from '../context/AuthContext';
+
 const regionesComunas = {
-  "Región Metropolitana": ["Santiago", "Puente Alto", "Maipú"],
-  "Valparaíso": ["Valparaíso", "Viña del Mar", "Quilpué"],
-  "Biobío": ["Concepción", "Los Ángeles", "Talcahuano"]
+  "Región Metropolitana": ["Santiago", "Puente Alto", "Maipú", "La Florida", "Las Condes"],
+  "Valparaíso": ["Valparaíso", "Viña del Mar", "Quilpué", "Villa Alemana"],
+  "Biobío": ["Concepción", "Los Ángeles", "Talcahuano", "San Pedro de la Paz"],
+  "Araucanía": ["Temuco", "Padre Las Casas", "Villarrica"],
+  "Los Lagos": ["Puerto Montt", "Osorno", "Puerto Varas"]
 };
 
-// --- Funciones de Validación (de validaciones.js) ---
 const validarEmail = (email) => {
-  const regex = /^[\w.-]+@(duoc\.cl|profesor\.duoc\.cl|gmail\.com)$/i;
+  if (!email || typeof email !== 'string') return false;
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email.trim());
 };
 
@@ -20,33 +23,27 @@ const validarPassword = (pass) => {
 };
 
 const validarRun = (run) => {
+  // Validación simple de formato (ej: 12345678-9)
   const regex = /^[0-9]{7,8}-[0-9kK]$/;
   return regex.test(run.trim());
 };
-// -----------------------------------------------------
 
 function RegistrationPage() {
   useDocumentTitle('Registro');
+  const navigate = useNavigate();
+  const { register } = useAuth();
+
   const [formData, setFormData] = useState({
-    nombre: '',
-    apellido: '',
-    run: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    region: '',
-    comuna: '',
-    direccion: '',
-    terminos: false
+    nombre: '', apellido: '', run: '', email: '', password: '',
+    confirmPassword: '', region: '', comuna: '', direccion: '', terminos: false
   });
 
   const [errors, setErrors] = useState({});
   const [comunas, setComunas] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const navigate = useNavigate(); // Hook para redirigir
+  const [serverError, setServerError] = useState('');
 
-  // Efecto para actualizar las comunas cuando cambia la región
   useEffect(() => {
     if (formData.region && regionesComunas[formData.region]) {
       setComunas(regionesComunas[formData.region]);
@@ -57,38 +54,29 @@ function RegistrationPage() {
 
   const handleChange = (e) => {
     const { id, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [id]: type === 'checkbox' ? checked : value
-    });
-
-    // Limpiar error al escribir
-    if (errors[id]) {
-      setErrors({
-        ...errors,
-        [id]: null
-      });
-    }
+    setFormData({ ...formData, [id]: type === 'checkbox' ? checked : value });
+    
+    // Limpiar error del campo al escribir
+    if (errors[id]) setErrors({ ...errors, [id]: null });
+    if (serverError) setServerError('');
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
     if (!formData.nombre.trim()) newErrors.nombre = "Nombre obligatorio.";
     if (!formData.apellido.trim()) newErrors.apellido = "Apellido obligatorio.";
-    if (!validarRun(formData.run)) newErrors.run = "RUN inválido. Formato: 12345678-9";
-    if (!validarEmail(formData.email)) newErrors.email = "Correo debe ser @duoc.cl, @profesor.duoc.cl o @gmail.com";
+    if (!validarRun(formData.run)) newErrors.run = "RUN inválido (ej: 12345678-9).";
+    if (!validarEmail(formData.email)) newErrors.email = "Debe ser un correo válido.";
     if (!validarPassword(formData.password)) newErrors.password = "Contraseña debe tener entre 4 y 10 caracteres.";
     if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Las contraseñas no coinciden.";
     if (!formData.region) newErrors.region = "Región obligatoria.";
     if (!formData.comuna) newErrors.comuna = "Comuna obligatoria.";
     if (!formData.direccion.trim()) newErrors.direccion = "Dirección obligatoria.";
     if (!formData.terminos) newErrors.terminos = "Debes aceptar los términos.";
-
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const formErrors = validateForm();
     
@@ -97,52 +85,24 @@ function RegistrationPage() {
       return;
     }
 
-    // Lógica de registro (simulando auth.js y registro.js)
-    // En un proyecto real, esto sería una llamada a una API
+    setErrors({});
+    setServerError('');
+
     try {
-      const users = JSON.parse(localStorage.getItem('users')) || [];
+      // Llamada al AuthContext (que llama al ms-usuarios en puerto 8081)
+      await register(formData);
       
-      // Validar si el email ya existe
-      if (users.some(user => user.email === formData.email)) {
-        setErrors({ email: "El correo electrónico ya está en uso." });
-        return;
-      }
-      
-      // Validar si el RUN ya existe
-      if (users.some(user => user.run === formData.run)) {
-        setErrors({ run: "El RUN ya está registrado en el sistema." });
-        return;
-      }
-
-      // Crear nuevo usuario
-      const newUser = {
-        nombre: `${formData.nombre} ${formData.apellido}`,
-        apellido: formData.apellido,
-        run: formData.run,
-        email: formData.email,
-        pass: formData.password, // En un caso real, esto debería estar hasheado
-        region: formData.region,
-        comuna: formData.comuna,
-        direccion: formData.direccion,
-        fechaRegistro: new Date().toISOString(),
-        rol: 'cliente'
-      };
-
-      users.push(newUser);
-      localStorage.setItem('users', JSON.stringify(users));
-      
-      // Guardar usuario actual (Login automático)
-      localStorage.setItem('currentUser', JSON.stringify(newUser));
-
-      // Mostrar éxito y redirigir
       setShowSuccess(true);
+      if (window.showToast) window.showToast('¡Cuenta creada exitosamente!', 'success');
+
+      // Redirigir después de unos segundos
       setTimeout(() => {
-        navigate('/'); // Redirige al Home
-      }, 3000); // Espera 3 segundos
+        navigate('/'); 
+      }, 2000);
 
     } catch (error) {
-      console.error("Error al registrar:", error);
-      setErrors({ form: "Ocurrió un error inesperado. Inténtalo de nuevo." });
+      console.error("Error en registro:", error);
+      setServerError(error.message || "Ocurrió un error al intentar registrarse.");
     }
   };
 
@@ -152,20 +112,20 @@ function RegistrationPage() {
         <Col md={10} lg={8}>
           <Card className="shadow-sm">
             <Card.Body className="p-5">
-              
               <div className="text-center mb-4">
-                <i className="bi bi-person-plus display-4" style={{ color: 'var(--verde-esmeralda)' }}></i>
+                <i className="bi bi-person-plus display-4" style={{ color: '#2E8B57' }}></i>
                 <h2 className="card-title text-center mt-2 section-title">Crear Cuenta</h2>
                 <p className="text-muted">Regístrate para disfrutar de todos nuestros servicios</p>
               </div>
 
               {showSuccess && (
                 <Alert variant="success">
-                  ¡Registro exitoso! Bienvenido a HuertoHogar. Serás redirigido al inicio...
+                  ¡Registro exitoso! Bienvenido a HuertoHogar. Redirigiendo...
                 </Alert>
               )}
-              {errors.form && (
-                <Alert variant="danger">{errors.form}</Alert>
+
+              {serverError && (
+                <Alert variant="danger">{serverError}</Alert>
               )}
 
               <Form noValidate onSubmit={handleSubmit}>
@@ -205,7 +165,7 @@ function RegistrationPage() {
                     </Form.Group>
                   </Col>
                 </Row>
-                
+
                 <Row>
                   <Col md={6} className="mb-3">
                     <Form.Group controlId="run">
@@ -355,7 +315,7 @@ function RegistrationPage() {
                     <i className="bi bi-person-plus me-2"></i>Crear Cuenta
                   </Button>
                 </div>
-                
+
                 <hr className="my-4" />
 
                 <div className="text-center">
@@ -364,7 +324,6 @@ function RegistrationPage() {
                     Iniciar Sesión
                   </Button>
                 </div>
-
               </Form>
             </Card.Body>
           </Card>

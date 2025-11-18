@@ -1,9 +1,10 @@
 /* src/App.css */
+
 /* Estilos del Hero (Index.html) */
 .hero {
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url('https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/hero-bg.jpg')
-      center/cover no-repeat;
+  url('https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/hero-bg.jpg')
+  center/cover no-repeat;
   padding: 100px 0;
 }
 
@@ -27,11 +28,11 @@
   margin-left: auto;
   margin-right: auto;
   box-shadow: 0 16px 48px rgba(46, 139, 87, 0.18),
-    0 3px 16px rgba(0, 0, 0, 0.12);
+  0 3px 16px rgba(0, 0, 0, 0.12);
   border-radius: 3rem;
   background: rgba(255, 255, 255, 0.92);
   padding: 2rem;
-  max-width: 340px; /* Esta línea controla el tamaño */
+  max-width: 340px;
   width: 90%;
   min-width: 200px;
   margin-bottom: 2.5rem !important;

@@ -1,14 +1,19 @@
-import React from 'react';
-// Corregido: Renombrar Image a BsImage en la importación
-import { Container, Row, Col, Card, Table, Button, FormControl, Alert, Image as BsImage } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext';  // Importar el hook del carrito
+import React, { useState } from 'react';
+import { Container, Row, Col, Card, Table, Button, FormControl, Alert, Image as BsImage, Modal } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import { apiService } from '../services/apiService';
+import { useAuth } from '../context/AuthContext';
 
 function CartPage() {
   useDocumentTitle('Carrito de Compras');
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
   
-  // Obtener datos y funciones del contexto del carrito
+  // Estado para controlar el Modal de Confirmación
+  const [showPayModal, setShowPayModal] = useState(false);
+
   const {
     cartItems,
     removeFromCart,
@@ -20,16 +25,45 @@ function CartPage() {
     totalItems
   } = useCart();
 
-  // --- INICIO DE LA MODIFICACIÓN ---
-  const handleCheckout = () => {
-    // Reemplazamos el 'alert' por 'window.showToast'
-    if (window.showToast) {
-      window.showToast('Funcionalidad de pago en desarrollo.', 'info');
-    } else {
-      alert('Funcionalidad de pago en desarrollo.');
+  // 1. Esta función solo abre el modal (verificando antes si está logueado)
+  const handleOpenCheckout = () => {
+    if (!currentUser) {
+        if (window.showToast) window.showToast('Debes iniciar sesión para comprar', 'warning');
+        navigate('/login');
+        return;
+    }
+    if (cartItems.length === 0) return;
+    
+    setShowPayModal(true); // Abre el modal bonito
+  };
+
+  // 2. Esta es la función que REALMENTE paga (se llama desde el Modal)
+  const confirmPayment = async () => {
+    const orderData = {
+        total: total,
+        productos: cartItems.map(item => ({
+            productoId: item.id,
+            cantidad: item.cantidad,
+            precio: item.precio
+        }))
+    };
+
+    try {
+        await apiService.post('/pedidos', orderData, true); 
+
+        if (window.showToast) window.showToast('¡Pedido realizado con éxito!', 'success');
+        
+        // CORRECCIÓN: Pasamos 'true' para evitar la alerta del navegador al pagar exitosamente
+        clearCart(true); 
+        
+        setShowPayModal(false); // Cierra el modal
+        navigate('/'); 
+    } catch (error) {
+        console.error("Error en checkout:", error);
+        if (window.showToast) window.showToast('Error al procesar pedido: ' + error.message, 'danger');
+        setShowPayModal(false);
     }
   };
-  // --- FIN DE LA MODIFICACIÓN ---
 
   if (totalItems === 0) {
     return (
@@ -69,7 +103,6 @@ function CartPage() {
                     <tr key={item.id}>
                       <td>
                         <div className="d-flex align-items-center">
-                          { /* Corregido: Usar BsImage */ }
                           <BsImage
                             src={item.imagen || 'https://via.placeholder.com/50x50?text=N/A'}
                             alt={item.nombre}
@@ -93,15 +126,9 @@ function CartPage() {
                           className="text-center form-control-sm input-cantidad-carrito"
                         />
                       </td>
-                      { /* CORREGIDO: item.precio en lugar de item.prescio */ }
                       <td className="text-end">${(item.precio * item.cantidad).toLocaleString('es-CL')}</td>
                       <td className="text-center">
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() => removeFromCart(item.id)}
-                          aria-label={`Quitar ${item.nombre}`}
-                        >
+                        <Button variant="outline-danger" size="sm" onClick={() => removeFromCart(item.id)}>
                           <i className="bi bi-trash"></i>
                         </Button>
                       </td>
@@ -114,50 +141,86 @@ function CartPage() {
               <Button as={Link} to="/productos" variant="outline-secondary">
                 <i className="bi bi-arrow-left me-1"></i>Seguir Comprando
               </Button>
-              <Button variant="danger" onClick={clearCart}>
+              {/* Botón para vaciar manualmente (pide confirmación) */}
+              <Button variant="danger" onClick={() => clearCart(false)}>
                 <i className="bi bi-trash me-1"></i>Vaciar Carrito
               </Button>
             </Card.Footer>
           </Card>
         </Col>
+
+        {/* Columna Resumen (Sticky Fix) */}
         <Col lg={4}>
-          <Card className="shadow-sm sticky-top" style={{ top: '80px' }}>
-            <Card.Header className="bg-white py-3">
-              <h5 className="mb-0">Resumen de Compra</h5>
-            </Card.Header>
-            <Card.Body>
-              <div className="d-flex justify-content-between mb-2">
-                <span>Subtotal:</span>
-                <span id="subtotal">${subtotal.toLocaleString('es-CL')}</span>
-              </div>
-              <div className="d-flex justify-content-between mb-2">
-                <span>Envío:</span>
-                <span id="shipping">${shippingCost.toLocaleString('es-CL')}</span>
-              </div>
-              <hr />
-              <div className="d-flex justify-content-between mb-3 fw-bold fs-5">
-                <span>Total:</span>
-                <span id="cartTotal">${total.toLocaleString('es-CL')}</span>
-              </div>
-              {subtotal < 15000 && shippingCost > 0 && (
-                <Alert variant='info' className="text-center py-2">
-                  Añade ${(15000 - subtotal).toLocaleString('es-CL')} más para envío gratis.
-                </Alert>
-              )}
-              {subtotal >= 15000 && (
-                <Alert variant='success' className="text-center py-2">
-                  ¡Tienes envío gratis!
-                </Alert>
-              )}
-              <div className="d-grid">
-                <Button variant="success" size="lg" onClick={handleCheckout}>
-                  Proceder al Pago
-                </Button>
-              </div>
-            </Card.Body>
-          </Card>
+          {/* Este div asegura el contexto relativo para que el sticky no choque con el footer */}
+          <div style={{ position: 'relative', height: '100%' }}>
+            <Card className="shadow-sm" style={{ position: 'sticky', top: '90px' }}>
+              <Card.Header className="bg-white py-3">
+                <h5 className="mb-0">Resumen de Compra</h5>
+              </Card.Header>
+              <Card.Body>
+                <div className="d-flex justify-content-between mb-2">
+                  <span>Subtotal:</span>
+                  <span id="subtotal">${subtotal.toLocaleString('es-CL')}</span>
+                </div>
+                <div className="d-flex justify-content-between mb-2">
+                  <span>Envío:</span>
+                  <span id="shipping">${shippingCost.toLocaleString('es-CL')}</span>
+                </div>
+                <hr />
+                <div className="d-flex justify-content-between mb-3 fw-bold fs-5">
+                  <span>Total:</span>
+                  <span id="cartTotal">${total.toLocaleString('es-CL')}</span>
+                </div>
+                
+                {subtotal < 15000 && shippingCost > 0 && (
+                  <Alert variant='info' className="text-center py-2">
+                    Añade ${(15000 - subtotal).toLocaleString('es-CL')} más para envío gratis.
+                  </Alert>
+                )}
+                
+                {subtotal >= 15000 && (
+                  <Alert variant='success' className="text-center py-2">
+                     ¡Tienes envío gratis!
+                  </Alert>
+                )}
+
+                <div className="d-grid">
+                  <Button variant="success" size="lg" onClick={handleOpenCheckout}>
+                    Proceder al Pago
+                  </Button>
+                </div>
+              </Card.Body>
+            </Card>
+          </div>
         </Col>
       </Row>
+
+      {/* --- MODAL DE CONFIRMACIÓN DE PAGO --- */}
+      <Modal show={showPayModal} onHide={() => setShowPayModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title className="text-dark fw-bold">Confirmar Compra</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="text-center mb-4">
+            <i className="bi bi-credit-card-2-front text-success display-1"></i>
+          </div>
+          <p className="text-center fs-5 text-dark">
+            ¿Estás seguro de que deseas procesar el pago por <strong>${total.toLocaleString('es-CL')}</strong>?
+          </p>
+          <p className="text-center text-muted small">
+            Al confirmar, se generará tu pedido y te enviaremos los detalles.
+          </p>
+        </Modal.Body>
+        <Modal.Footer className="justify-content-center">
+          <Button variant="secondary" onClick={() => setShowPayModal(false)}>
+            Cancelar
+          </Button>
+          <Button variant="success" onClick={confirmPayment} className="px-4">
+            Confirmar y Pagar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
     </Container>
   );
 }

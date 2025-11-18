@@ -1,5 +1,4 @@
-/* src/index.css */
-/* 1. Reset Global */
+/* Reset Global */
 *,
 *::before,
 *::after {
@@ -8,10 +7,10 @@
   padding: 0;
 }
 
-/* 2. Importación de Google Fonts */
+/* Importación de Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
 
-/* 3. Variables de Color (de tu style.css) */
+/* Variables de Color */
 :root {
   --verde-esmeralda: #2E8B57;
   --amarillo-mostaza: #FFD700;
@@ -23,45 +22,35 @@
   --fondo-tarjetas: #FFFFFF;
   --sombra-suave: 0 4px 6px rgba(0, 0, 0, 0.1);
   --sombra-media: 0 6px 12px rgba(0, 0, 0, 0.15);
-  --footer-dark: #343a40;  /* Variable para el color del footer */
+  --footer-dark: #343a40;
 }
 
-/* 4. *** INICIO DE LA CORRECCIÓN DE OVER-SCROLL *** */
-/* Pone el color del NAVBAR en el fondo superior (overscroll hacia arriba) */
+/* Configuración de fondo y scroll */
 html {
   background-color: var(--verde-esmeralda);
   height: 100%;
 }
 
-/* Pone el color del FOOTER en el fondo inferior (overscroll hacia abajo) */
 body {
-  background-color: var(--footer-dark);  /* Color del Footer */
-  overflow-x: hidden;  /* Mantiene la corrección del scroll horizontal */
+  background-color: var(--footer-dark);
+  overflow-x: hidden;
   height: 100%;
-  
-  /* Esto aniquila cualquier texto fantasma (caracteres BOM) */
-  font-size: 0;
+  font-size: 0; /* Elimina espacios fantasma */
 }
 
-/* Pone el color del CONTENIDO (blanco/gris claro) en el contenedor de React */
 #root {
-  background-color: var(--fondo-blanco);  /* Color del contenido */
-  min-height: 100%;  /* Asegura que ocupe al menos toda la pantalla */
+  background-color: var(--fondo-blanco);
+  min-height: 100%;
   width: 100%;
-
-  /* --- ESTILOS MOVIDOS DESDE BODY --- */
   font-family: 'Montserrat', sans-serif;
   color: var(--gris-oscuro);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
-  /* Resetea el tamaño de fuente que anulamos en <body> */
-  font-size: 1rem; 
+  font-size: 1rem;
 }
 
-/* *** FIN DE LA CORRECCIÓN *** */
-/* 5. Estilos Globales y Tipografía (restaurados) */
+/* Estilos Globales y Tipografía */
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Playfair Display', serif;
   color: var(--marron-claro);
@@ -78,7 +67,7 @@ a:hover {
   color: var(--amarillo-mostaza);
 }
 
-/* 6. Estilos de Componentes (Bootstrap) */
+/* Estilos de Componentes */
 .section-title {
   position: relative;
   padding-bottom: 15px;
@@ -128,7 +117,6 @@ a:hover {
   border-color: #256b44 !important;
 }
 
-/* --- INICIO DE LA CORRECCIÓN DEL TYPO --- */
 .btn-warning {
   background-color: var(--amarillo-mostaza) !important;
   border-color: var(--amarillo-mostaza) !important;
@@ -142,9 +130,8 @@ a:hover {
   border-color: #e6c200 !important;
   color: var(--gris-oscuro) !important;
 }
-/* --- FIN DE LA CORRECCIÓN DEL TYPO --- */
 
-/* 7. Clases Específicas */
+/* Clases de Utilidad */
 .team-photo {
   width: 180px;
   height: 180px;
@@ -156,6 +143,52 @@ a:hover {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Estilos para Modals (Forzar tema claro y textos visibles) */
+.modal-content {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #dee2e6 !important;
+}
+
+.modal-header,
+.modal-body,
+.modal-footer {
+  background-color: transparent !important;
+  color: #000000 !important;
+}
+
+.modal-title,
+.modal-header h4,
+.modal-header .h4 {
+  color: #000000 !important;
+}
+
+.modal-body label,
+.modal-body .form-label {
+  color: #212529 !important;
+  font-weight: 600 !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+}
+
+.modal-body input,
+.modal-body select,
+.modal-body textarea,
+.modal-body .form-control,
+.modal-body .form-select {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+  border: 1px solid #ced4da !important;
+}
+
+.modal-body input::placeholder,
+.modal-body textarea::placeholder {
+  color: #6c757d !important;
+}
+
+.btn-close {
+  filter: none !important;
 }

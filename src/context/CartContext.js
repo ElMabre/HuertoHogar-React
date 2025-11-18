@@ -1,20 +1,14 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { useProducts } from './ProductContext';
 
-// 1. Crear el Contexto
-// Optamos por Context API para manejar el carrito globalmente
-// permitiendo a cualquier componente acceder a los datos del carrito
 const CartContext = createContext();
 
-// Hook personalizado para usar el contexto de forma limpia
-// Nuestro equipo expone este hook para mantener consistencia en toda la aplicación
 export const useCart = () => {
   return useContext(CartContext);
 };
 
-const SHIPPING_COST = 3500;  // Costo de envío fijo
+const SHIPPING_COST = 3500;
 
-// 3. Crear el Proveedor del Contexto
 export const CartProvider = ({ children }) => {
   const { products } = useProducts();
   const [cartItems, setCartItems] = useState(() => {
@@ -26,12 +20,9 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('huertohogar_carrito_react', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // --- Funciones para manipular el carrito ---
   const addToCart = useCallback((productId, quantity = 1) => {
     const product = products.find(p => p.id === productId);
     if (!product) {
-      console.error("Producto no encontrado:", productId);
-      // REEMPLAZO DE ALERT
       if (window.showToast) window.showToast('Producto no encontrado', 'danger');
       return;
     }
@@ -41,13 +32,10 @@ export const CartProvider = ({ children }) => {
       const currentQuantityInCart = existingItemIndex !== -1 ? prevItems[existingItemIndex].cantidad : 0;
 
       if (product.stock < currentQuantityInCart + quantity) {
-        console.warn("Stock insuficiente para:", productId);
-        // REEMPLAZO DE ALERT
         if (window.showToast) window.showToast('No hay suficiente stock disponible', 'warning');
         return prevItems;
       }
 
-      // Añadido Toast de éxito (como en el cartManager.js original [cite: 5180-5181])
       if (window.showToast) window.showToast('Producto añadido al carrito', 'success');
 
       if (existingItemIndex !== -1) {
@@ -69,8 +57,6 @@ export const CartProvider = ({ children }) => {
 
   const removeFromCart = useCallback((productId) => {
     setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
-    
-    // Añadido Toast de éxito (como en el cartManager.js original [cite: 5194-5195])
     if (window.showToast) window.showToast('Producto eliminado del carrito', 'success');
   }, []);
 
@@ -83,8 +69,6 @@ export const CartProvider = ({ children }) => {
 
     const product = products.find(p => p.id === productId);
     if (!product) {
-      console.error("Producto no encontrado al actualizar cantidad:", productId);
-      // Añadido Toast de error (como en el cartManager.js original [cite: 5219-5220])
       if (window.showToast) window.showToast('Producto no encontrado en el inventario', 'danger');
       removeFromCart(productId);
       return;
@@ -97,7 +81,6 @@ export const CartProvider = ({ children }) => {
       const finalQuantity = Math.min(quantityNum, product.stock);
 
       if (quantityNum > product.stock) {
-        // REEMPLAZO DE ALERT
         if (window.showToast) window.showToast(`Solo quedan ${product.stock} unidades de ${product.nombre}`, 'warning');
       }
 
@@ -107,20 +90,20 @@ export const CartProvider = ({ children }) => {
     });
   }, [removeFromCart, products]);
 
-  const clearCart = useCallback(() => {
-    if (cartItems.length === 0) {
-      // REEMPLAZO DE ALERT
+  const clearCart = useCallback((forceClear = false) => {
+    if (cartItems.length === 0 && !forceClear) {
       if (window.showToast) window.showToast('El carrito ya está vacío', 'info');
       return;
     }
-    if (window.confirm('¿Estás seguro de que deseas vaciar el carrito?')) {
-      setCartItems([]);
-      // Añadido Toast de éxito (como en el cartManager.js original [cite: 5243-5244])
-      if (window.showToast) window.showToast('Carrito vaciado', 'success');
-    }
-  }, [cartItems.length]);
 
-  // --- Valores calculados ---
+    if (forceClear || window.confirm('¿Estás seguro de que deseas vaciar el carrito?')) {
+      setCartItems([]);
+      if (!forceClear && window.showToast) {
+        window.showToast('Carrito vaciado', 'success');
+      }
+    }
+  }, [cartItems]);
+
   const calculateSubtotal = useCallback(() => {
     return cartItems.reduce((total, item) => total + (item.precio * item.cantidad), 0);
   }, [cartItems]);
@@ -141,7 +124,6 @@ export const CartProvider = ({ children }) => {
     return cartItems.reduce((total, item) => total + item.cantidad, 0);
   }, [cartItems]);
 
-  // --- Valor que proveerá el contexto ---
   const value = {
     cartItems,
     addToCart,

@@ -1,53 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Button, Table, Badge, Modal, Form, Row, Col } from 'react-bootstrap';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-
-// --- Datos de usuarios (migrado de admin.js loadUsers) ---
-// Para la Evaluación 3, esto vendrá de una API.
-const initialUsersData = [
-  {
-    id: 1,
-    nombre: 'Juan Pérez',
-    email: 'juan@duoc.cl',
-    rol: 'Administrador',
-    estado: 'Activo',
-    registro: '2024-01-15'
-  }, // [cite: 3779-3786]
-  {
-    id: 2,
-    nombre: 'María González',
-    email: 'maria@gmail.com',
-    rol: 'Vendedor',
-    estado: 'Activo',
-    registro: '2024-02-10'
-  }, // [cite: 3787-3794]
-  {
-    id: 3,
-    nombre: 'Pedro Martínez',
-    email: 'pedro@duoc.cl',
-    rol: 'Cliente',
-    estado: 'Activo',
-    registro: '2024-03-05'
-  }, // [cite: 3795-3802]
-  {
-    id: 4,
-    nombre: 'Ana López',
-    email: 'ana@profesor.duoc.cl',
-    rol: 'Cliente',
-    estado: 'Inactivo',
-    registro: '2024-01-20'
-  } // [cite: 3804-3811]
-];
-// --- Fin de datos ---
+import { apiService } from '../services/apiService';
 
 function AdminUsuarios() {
   useDocumentTitle('Admin: Usuarios');
-  const [users, setUsers] = useState(initialUsersData);
-  const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState('new');  // 'new' o 'edit'
-  const [currentUser, setCurrentUser] = useState(null);  // Usuario a editar
 
-  // --- Lógica de Modal ---
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState('new');
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await apiService.get('/admin/usuarios', true);
+      setUsers(data);
+    } catch (error) {
+      console.error("Error cargando usuarios:", error);
+      if (window.showToast) window.showToast('Error al cargar usuarios: ' + error.message, 'danger');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
   const handleShowModal = (mode, user = null) => {
     setModalMode(mode);
     setCurrentUser(user);
@@ -59,76 +41,91 @@ function AdminUsuarios() {
     setCurrentUser(null);
   };
 
-  // --- INICIO DE LA MODIFICACIÓN 1 ---
-  // --- Lógica de Eliminación (migrado de admin.js eliminarUsuario) ---
-  const handleDelete = (id) => {
-    // Replicando la confirmación del admin.js [cite: 3831-3832]
-    if (window.confirm(`¿Estás seguro de que quieres eliminar el usuario ${id}?`)) {
-      setUsers(prevUsers => prevUsers.filter(u => u.id !== id));
-      
-      // Reemplazamos el 'alert' por 'window.showToast'
-      if (window.showToast) {
-        window.showToast(`Usuario ${id} eliminado`, 'success');
-      } else {
-        alert(`Usuario ${id} eliminado`);
+  const handleDelete = async (id) => {
+    if (window.confirm(`¿Estás seguro de eliminar al usuario ID: ${id}?`)) {
+      try {
+        await apiService.delete(`/admin/usuarios/${id}`);
+        if (window.showToast) window.showToast(`Usuario eliminado correctamente`, 'success');
+        fetchUsers();
+      } catch (error) {
+        console.error(error);
+        if (window.showToast) window.showToast('Error al eliminar: ' + error.message, 'danger');
       }
     }
   };
-  // --- FIN DE LA MODIFICACIÓN 1 ---
 
-
-  // --- INICIO DE LA MODIFICACIÓN 2 ---
-  // Lógica para guardar (simulada por ahora)
-  const handleSaveUser = (e) => {
+  const handleSaveUser = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const updatedUser = {
-      id: currentUser ? currentUser.id : Date.now(),  // ID simple si es nuevo
-      nombre: `${formData.get('userName')} ${formData.get('userLastName')}`,
+
+    const userData = {
+      nombre: formData.get('userName'),
+      apellido: formData.get('userLastName'),
       email: formData.get('userEmail'),
       rol: formData.get('userRole'),
-      estado: 'Activo',  // Por defecto
-      registro: currentUser ? currentUser.registro : new Date().toISOString().split('T')[0]
+      run: formData.get('userRun') || 'Sin-RUN', 
+      region: 'Metropolitana',
+      comuna: 'Santiago',
+      direccion: 'Dirección desconocida',
+      password: formData.get('userPassword')
     };
 
-    if (modalMode === 'new') {
-      setUsers(prevUsers => [updatedUser, ...prevUsers]);
-      // Reemplazamos el 'alert' por 'window.showToast'
-      if (window.showToast) {
-        window.showToast('Usuario nuevo guardado (simulación)', 'success');
+    try {
+      if (modalMode === 'new') {
+        if (!userData.password) {
+            if (window.showToast) window.showToast('La contraseña es obligatoria para nuevos usuarios', 'warning');
+            return;
+        }
+        await apiService.post('/admin/usuarios', userData, true);
+        if (window.showToast) window.showToast('Usuario creado correctamente', 'success');
+        fetchUsers();
+        handleCloseModal();
       } else {
-        alert('Usuario nuevo guardado (simulación)');
+        if (window.showToast) window.showToast('Edición de usuarios no disponible en esta versión del backend', 'info');
+        handleCloseModal();
       }
-    } else {
-      setUsers(prevUsers =>
-        prevUsers.map(u => u.id === updatedUser.id ? updatedUser : u)
-      );
-      // Reemplazamos el 'alert' por 'window.showToast'
-      if (window.showToast) {
-        window.showToast('Usuario editado guardado (simulación)', 'success');
-      } else {
-        alert('Usuario editado guardado (simulación)');
-      }
+    } catch (error) {
+      console.error(error);
+      if (window.showToast) window.showToast('Error al guardar: ' + error.message, 'danger');
     }
-
-    handleCloseModal();
-  };
-  // --- FIN DE LA MODIFICACIÓN 2 ---
-
-  // Función segura para obtener el primer nombre
-  const getFirstName = (name) => {
-    if (!name) return '';
-    return name.split(' ')[0];
-  };
-  // Función segura para obtener el apellido (o apellidos)
-  const getLastName = (name) => {
-    if (!name) return '';
-    return name.split(' ').slice(1).join(' ');
   };
 
   return (
     <Container fluid>
-      { /* Encabezado y botón "Nuevo Usuario" [cite: 3874, 4034-4035] */ }
+      <style type="text/css">
+        {`
+          .custom-admin-modal .modal-content {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #dee2e6 !important;
+          }
+          .custom-admin-modal .modal-title,
+          .custom-admin-modal label, 
+          .custom-admin-modal .form-label {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            text-shadow: none !important;
+          }
+          .custom-admin-modal .form-control, 
+          .custom-admin-modal .form-select {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #ced4da !important;
+            -webkit-text-fill-color: #000000 !important;
+          }
+          .custom-admin-modal .form-control::placeholder {
+            color: #6c757d !important;
+            opacity: 1 !important;
+          }
+          .custom-admin-modal .form-control:focus,
+          .custom-admin-modal .form-select:focus {
+             background-color: #ffffff !important;
+             color: #000000 !important;
+             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+          }
+        `}
+      </style>
+
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 className="h2">Gestión de Usuarios</h1>
         <Button variant="success" onClick={() => handleShowModal('new')}>
@@ -136,7 +133,6 @@ function AdminUsuarios() {
         </Button>
       </div>
 
-      { /* Tabla de Usuarios [cite: 3881, 4036-4040] */ }
       <div className="table-responsive">
         <Table striped hover>
           <thead>
@@ -145,53 +141,53 @@ function AdminUsuarios() {
               <th>Nombre</th>
               <th>Email</th>
               <th>Rol</th>
-              <th>Estado</th>
-              <th>Registro</th>
               <th>Acciones</th>
             </tr>
           </thead>
-          <tbody id="tablaUsuarios">
-            {users.map(user => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.nombre}</td>
-                <td>{user.email}</td>
-                <td><Badge bg="info">{user.rol}</Badge></td>
-                <td>
-                  <Badge bg={user.estado === 'Activo' ? 'success' : 'secondary'}>
-                    {user.estado}
-                  </Badge>
-                </td>
-                <td>{user.registro}</td>
-                <td>
-                  { /* --- BOTONES CORREGIDOS --- */ }
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    className="me-1"
-                    onClick={() => handleShowModal('edit', user)}
-                  >
-                    <i className="bi bi-pencil"></i>
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={() => handleDelete(user.id)}
-                  >
-                    <i className="bi bi-trash"></i>
-                  </Button>
-                </td>
-              </tr>
-            ))}
+          <tbody>
+            {loading ? (
+                <tr><td colSpan="5" className="text-center">Cargando usuarios...</td></tr>
+            ) : users.length === 0 ? (
+                <tr><td colSpan="5" className="text-center">No hay usuarios registrados.</td></tr>
+            ) : (
+                users.map(user => (
+                <tr key={user.id}>
+                    <td>{user.id}</td>
+                    <td>{user.nombre} {user.apellido}</td>
+                    <td>{user.email}</td>
+                    <td>
+                        <Badge bg={user.rol === 'ADMIN' ? 'danger' : user.rol === 'VENDEDOR' ? 'warning' : 'info'}>
+                            {user.rol}
+                        </Badge>
+                    </td>
+                    <td>
+                    <Button
+                        variant="outline-primary"
+                        size="sm"
+                        className="me-1"
+                        onClick={() => handleShowModal('edit', user)}
+                    >
+                        <i className="bi bi-pencil"></i>
+                    </Button>
+                    <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleDelete(user.id)}
+                    >
+                        <i className="bi bi-trash"></i>
+                    </Button>
+                    </td>
+                </tr>
+                ))
+            )}
           </tbody>
         </Table>
       </div>
 
-      { /* Modal para Agregar/Editar Usuario [cite: 3931, 4087-4098] */ }
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <Modal show={showModal} onHide={handleCloseModal} className="custom-admin-modal">
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalMode === 'new' ? 'Nuevo Usuario' : 'Editar Usuario'}
+            {modalMode === 'new' ? 'Nuevo Usuario' : 'Editar Usuario (Solo lectura)'}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -200,55 +196,42 @@ function AdminUsuarios() {
               <Col md={6} className="mb-3">
                 <Form.Group controlId="userName">
                   <Form.Label>Nombre</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="userName"
-                    defaultValue={getFirstName(currentUser?.nombre)}
-                    required
-                    maxLength={50}
-                  />
+                  <Form.Control type="text" name="userName" defaultValue={currentUser?.nombre} required maxLength={50} />
                 </Form.Group>
               </Col>
               <Col md={6} className="mb-3">
                 <Form.Group controlId="userLastName">
                   <Form.Label>Apellido</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="userLastName"
-                    defaultValue={getLastName(currentUser?.nombre)}
-                    required
-                    maxLength={50}
-                  />
+                  <Form.Control type="text" name="userLastName" defaultValue={currentUser?.apellido} required maxLength={50} />
                 </Form.Group>
               </Col>
             </Row>
+            
+            <Form.Group className="mb-3" controlId="userRun">
+                <Form.Label>RUN</Form.Label>
+                <Form.Control type="text" name="userRun" defaultValue={currentUser?.run} placeholder="12345678-9" />
+            </Form.Group>
+
             <Form.Group className="mb-3" controlId="userEmail">
               <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                name="userEmail"
-                defaultValue={currentUser?.email}
-                required
-              />
+              <Form.Control type="email" name="userEmail" defaultValue={currentUser?.email} required />
             </Form.Group>
+
             <Form.Group className="mb-3" controlId="userPassword">
-              <Form.Label>Contraseña</Form.Label>
-              <Form.Control
-                type="password"
-                name="userPassword"
-                placeholder={modalMode === 'edit' ? '(Dejar en blanco para no cambiar)' : ''}
-                required={modalMode === 'new'}
-                minLength={4}
-                maxLength={10}
+              <Form.Label>Contraseña {modalMode === 'edit' && '(Dejar en blanco para mantener)'}</Form.Label>
+              <Form.Control 
+                type="password" 
+                name="userPassword" 
+                placeholder={modalMode === 'edit' ? '' : 'Contraseña segura'}
               />
             </Form.Group>
+
             <Form.Group className="mb-3" controlId="userRole">
               <Form.Label>Rol</Form.Label>
-              <Form.Select name="userRole" defaultValue={currentUser?.rol} required>
-                <option value="">Seleccionar rol</option>
-                <option value="Administrador">Administrador</option>
-                <option value="Vendedor">Vendedor</option>
-                <option value="Cliente">Cliente</option>
+              <Form.Select name="userRole" defaultValue={currentUser?.rol || 'CLIENTE'} required>
+                <option value="ADMIN">Administrador</option>
+                <option value="VENDEDOR">Vendedor</option>
+                <option value="CLIENTE">Cliente</option>
               </Form.Select>
             </Form.Group>
           </Form>
@@ -258,7 +241,7 @@ function AdminUsuarios() {
             Cancelar
           </Button>
           <Button variant="success" type="submit" form="formUsuario">
-            Guardar Usuario
+            {modalMode === 'new' ? 'Crear Usuario' : 'Guardar (Simulado)'}
           </Button>
         </Modal.Footer>
       </Modal>
