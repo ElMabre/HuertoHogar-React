@@ -7,10 +7,10 @@ import { apiService } from '../services/apiService';
 function AdminProductos() {
   useDocumentTitle('Admin: Productos');
   const { products, refreshProducts } = useProducts();
-
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('new');
   const [currentProduct, setCurrentProduct] = useState(null);
+  const [isSaving, setIsSaving] = useState(false); 
 
   const handleShowModal = (mode, product = null) => {
     setModalMode(mode);
@@ -21,6 +21,7 @@ function AdminProductos() {
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentProduct(null);
+    setIsSaving(false); 
   };
 
   const handleDelete = async (id) => {
@@ -38,8 +39,10 @@ function AdminProductos() {
 
   const handleSaveProduct = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    if (isSaving) return;
+    setIsSaving(true);
 
+    const formData = new FormData(e.target);
     const productData = {
       id: currentProduct ? currentProduct.id : null,
       sku: currentProduct ? currentProduct.sku : `SKU-${Date.now()}`,
@@ -56,55 +59,25 @@ function AdminProductos() {
     try {
       if (modalMode === 'new') {
         await apiService.post('/admin/productos', productData, true);
-        if (window.showToast) window.showToast('Producto creado', 'success');
+        if (window.showToast) window.showToast('Producto creado exitosamente', 'success');
       } else {
         await apiService.put(`/admin/productos/${currentProduct.id}`, productData);
-        if (window.showToast) window.showToast('Producto actualizado', 'success');
+        if (window.showToast) window.showToast('Producto actualizado correctamente', 'success');
       }
+      
       await refreshProducts();
       handleCloseModal();
+      
     } catch (error) {
       console.error(error);
-      if (window.showToast) window.showToast('Error: ' + error.message, 'danger');
+      if (window.showToast) window.showToast('Error al guardar: ' + error.message, 'danger');
+      setIsSaving(false);
     }
   };
 
   return (
     <Container fluid>
-      <style type="text/css">
-        {`
-          .custom-admin-modal .modal-content {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-            border: 1px solid #dee2e6 !important;
-          }
-          .custom-admin-modal .modal-title,
-          .custom-admin-modal label, 
-          .custom-admin-modal .form-label {
-            color: #000000 !important;
-            font-weight: 700 !important;
-            text-shadow: none !important;
-          }
-          .custom-admin-modal .form-control, 
-          .custom-admin-modal .form-select {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-            border: 1px solid #ced4da !important;
-            -webkit-text-fill-color: #000000 !important;
-          }
-          .custom-admin-modal .form-control::placeholder {
-            color: #6c757d !important;
-            opacity: 1 !important;
-          }
-          .custom-admin-modal .form-control:focus,
-          .custom-admin-modal .form-select:focus {
-             background-color: #ffffff !important;
-             color: #000000 !important;
-             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
-          }
-        `}
-      </style>
-
+      {/* Título y Botón Agregar */}
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 className="h2">Gestión de Productos</h1>
         <Button variant="success" onClick={() => handleShowModal('new')}>
@@ -112,6 +85,7 @@ function AdminProductos() {
         </Button>
       </div>
 
+      {/* Tabla de Productos */}
       <div className="table-responsive">
         <Table striped hover responsive>
           <thead>
@@ -130,8 +104,12 @@ function AdminProductos() {
               <tr key={product.id}>
                 <td>{product.id}</td>
                 <td>
-                  <img src={product.imagen || 'https://via.placeholder.com/40'} alt={product.nombre} 
-                       style={{ width: '40px', height: '40px', objectFit: 'cover' }} className="rounded" />
+                  <img 
+                    src={product.imagen || 'https://via.placeholder.com/40'} 
+                    alt={product.nombre}
+                    style={{ width: '40px', height: '40px', objectFit: 'cover' }} 
+                    className="rounded" 
+                  />
                 </td>
                 <td>{product.nombre}</td>
                 <td><Badge bg="secondary">{product.categoria}</Badge></td>
@@ -151,20 +129,21 @@ function AdminProductos() {
         </Table>
       </div>
 
-      <Modal show={showModal} onHide={handleCloseModal} size="lg" backdrop="static" className="custom-admin-modal">
+      {/* Modal de Edición/Creación */}
+      <Modal show={showModal} onHide={handleCloseModal} size="lg" backdrop="static">
         <Modal.Header closeButton>
           <Modal.Title>
             {modalMode === 'new' ? 'Nuevo Producto' : 'Editar Producto'}
           </Modal.Title>
         </Modal.Header>
-        
+
         <Modal.Body>
           <Form id="formProducto" onSubmit={handleSaveProduct}>
             <Row>
               <Col md={6} className="mb-3">
                 <Form.Group controlId="productName">
                   <Form.Label>Nombre del Producto</Form.Label>
-                  <Form.Control type="text" name="productName" defaultValue={currentProduct?.nombre} required />
+                  <Form.Control type="text" name="productName" defaultValue={currentProduct?.nombre} required placeholder="Ej: Manzanas Fuji" />
                 </Form.Group>
               </Col>
               <Col md={6} className="mb-3">
@@ -185,20 +164,20 @@ function AdminProductos() {
               <Col md={6} className="mb-3">
                 <Form.Group controlId="productPrice">
                   <Form.Label>Precio ($)</Form.Label>
-                  <Form.Control type="number" name="productPrice" defaultValue={currentProduct?.precio} min="0" required />
+                  <Form.Control type="number" name="productPrice" defaultValue={currentProduct?.precio} min="0" required placeholder="Ej: 1500" />
                 </Form.Group>
               </Col>
               <Col md={6} className="mb-3">
                 <Form.Group controlId="productStock">
                   <Form.Label>Stock</Form.Label>
-                  <Form.Control type="number" name="productStock" defaultValue={currentProduct?.stock} min="0" required />
+                  <Form.Control type="number" name="productStock" defaultValue={currentProduct?.stock} min="0" required placeholder="Ej: 50" />
                 </Form.Group>
               </Col>
             </Row>
 
             <Form.Group className="mb-3" controlId="productDescription">
               <Form.Label>Descripción</Form.Label>
-              <Form.Control as="textarea" name="productDescription" rows={3} defaultValue={currentProduct?.descripcion || ''} />
+              <Form.Control as="textarea" name="productDescription" rows={3} defaultValue={currentProduct?.descripcion || ''} placeholder="Breve descripción..." />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="productImage">
@@ -210,7 +189,7 @@ function AdminProductos() {
               <Col md={6} className="mb-3">
                 <Form.Group controlId="productOrigin">
                   <Form.Label>Origen</Form.Label>
-                  <Form.Control type="text" name="productOrigin" defaultValue={currentProduct?.origen || ''} />
+                  <Form.Control type="text" name="productOrigin" defaultValue={currentProduct?.origen || ''} placeholder="Ej: Curacaví" />
                 </Form.Group>
               </Col>
               <Col md={6} className="mb-3">
@@ -230,10 +209,23 @@ function AdminProductos() {
             </Row>
           </Form>
         </Modal.Body>
-        
+
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>Cancelar</Button>
-          <Button variant="success" type="submit" form="formProducto">Guardar Producto</Button>
+          <Button variant="secondary" onClick={handleCloseModal} disabled={isSaving}>
+            Cancelar
+          </Button>
+          
+
+          <Button variant="success" type="submit" form="formProducto" disabled={isSaving}>
+            {isSaving ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Guardando...
+              </>
+            ) : (
+              'Guardar Producto'
+            )}
+          </Button>
         </Modal.Footer>
       </Modal>
     </Container>

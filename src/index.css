@@ -192,3 +192,15 @@ code {
 .btn-close {
   filter: none !important;
 }
+.modal {
+  font-size: 1rem !important;
+}
+
+.modal input, 
+.modal select, 
+.modal textarea, 
+.modal label,
+.modal p,
+.modal div {
+  font-size: 1rem !important;
+}
