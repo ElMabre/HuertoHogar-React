@@ -1,9 +1,11 @@
 // src/services/apiService.js
 
-// Definimos las URL base de cada microservicio
-const USERS_API_URL = 'http://localhost:8081/api';   // Login, Registro, Usuarios
-const CATALOG_API_URL = 'http://localhost:8082/api'; // Productos
-const ORDERS_API_URL = 'http://localhost:8083/api';  // Pedidos
+const API_BASE = 'http://18.211.31.168/api'; 
+
+
+const USERS_API_URL = API_BASE;   
+const CATALOG_API_URL = API_BASE; 
+const ORDERS_API_URL = API_BASE;
 
 /**
  * Función inteligente para elegir el puerto correcto según el endpoint
