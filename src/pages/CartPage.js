@@ -11,8 +11,9 @@ function CartPage() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   
-  // Estado para controlar el Modal de Confirmación
+  // Estados para controlar los Modals
   const [showPayModal, setShowPayModal] = useState(false);
+  const [showClearModal, setShowClearModal] = useState(false);
 
   const {
     cartItems,
@@ -25,7 +26,6 @@ function CartPage() {
     totalItems
   } = useCart();
 
-  // 1. Esta función solo abre el modal (verificando antes si está logueado)
   const handleOpenCheckout = () => {
     if (!currentUser) {
         if (window.showToast) window.showToast('Debes iniciar sesión para comprar', 'warning');
@@ -34,10 +34,9 @@ function CartPage() {
     }
     if (cartItems.length === 0) return;
     
-    setShowPayModal(true); // Abre el modal bonito
+    setShowPayModal(true);
   };
 
-  // 2. Esta es la función que REALMENTE paga (se llama desde el Modal)
   const confirmPayment = async () => {
     const orderData = {
         total: total,
@@ -53,16 +52,31 @@ function CartPage() {
 
         if (window.showToast) window.showToast('¡Pedido realizado con éxito!', 'success');
         
-        // CORRECCIÓN: Pasamos 'true' para evitar la alerta del navegador al pagar exitosamente
         clearCart(true); 
         
-        setShowPayModal(false); // Cierra el modal
+        setShowPayModal(false);
         navigate('/'); 
     } catch (error) {
         console.error("Error en checkout:", error);
         if (window.showToast) window.showToast('Error al procesar pedido: ' + error.message, 'danger');
         setShowPayModal(false);
     }
+  };
+
+  // Función para abrir modal de vaciar carrito
+  const handleOpenClearCart = () => {
+    if (cartItems.length === 0) {
+        if (window.showToast) window.showToast('El carrito ya está vacío', 'info');
+        return;
+    }
+    setShowClearModal(true);
+  };
+
+  // Confirmar vaciado (usa force=true para evitar window.confirm del context)
+  const handleConfirmClear = () => {
+    clearCart(true);
+    setShowClearModal(false);
+    if (window.showToast) window.showToast('Carrito vaciado', 'success');
   };
 
   if (totalItems === 0) {
@@ -141,17 +155,15 @@ function CartPage() {
               <Button as={Link} to="/productos" variant="outline-secondary">
                 <i className="bi bi-arrow-left me-1"></i>Seguir Comprando
               </Button>
-              {/* Botón para vaciar manualmente (pide confirmación) */}
-              <Button variant="danger" onClick={() => clearCart(false)}>
+              
+              <Button variant="danger" onClick={handleOpenClearCart}>
                 <i className="bi bi-trash me-1"></i>Vaciar Carrito
               </Button>
             </Card.Footer>
           </Card>
         </Col>
 
-        {/* Columna Resumen (Sticky Fix) */}
         <Col lg={4}>
-          {/* Este div asegura el contexto relativo para que el sticky no choque con el footer */}
           <div style={{ position: 'relative', height: '100%' }}>
             <Card className="shadow-sm" style={{ position: 'sticky', top: '90px' }}>
               <Card.Header className="bg-white py-3">
@@ -195,7 +207,7 @@ function CartPage() {
         </Col>
       </Row>
 
-      {/* --- MODAL DE CONFIRMACIÓN DE PAGO --- */}
+      {/* Modal Confirmar Pago */}
       <Modal show={showPayModal} onHide={() => setShowPayModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title className="text-dark fw-bold">Confirmar Compra</Modal.Title>
@@ -217,6 +229,32 @@ function CartPage() {
           </Button>
           <Button variant="success" onClick={confirmPayment} className="px-4">
             Confirmar y Pagar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal Confirmar Vaciar Carrito */}
+      <Modal show={showClearModal} onHide={() => setShowClearModal(false)} centered>
+        <Modal.Header closeButton className="bg-danger text-white">
+          <Modal.Title className="fw-bold text-white">Vaciar Carrito</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="text-center mb-4 mt-3">
+            <i className="bi bi-exclamation-triangle text-danger display-1"></i>
+          </div>
+          <p className="text-center fs-5 text-dark">
+            ¿Estás seguro de que deseas eliminar <strong>todos los productos</strong> del carrito?
+          </p>
+          <p className="text-center text-muted small">
+            Esta acción no se puede deshacer.
+          </p>
+        </Modal.Body>
+        <Modal.Footer className="justify-content-center">
+          <Button variant="secondary" onClick={() => setShowClearModal(false)}>
+            Cancelar
+          </Button>
+          <Button variant="danger" onClick={handleConfirmClear} className="px-4">
+            Sí, vaciar carrito
           </Button>
         </Modal.Footer>
       </Modal>

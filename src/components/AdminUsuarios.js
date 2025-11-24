@@ -64,7 +64,7 @@ function AdminUsuarios() {
       email: formData.get('userEmail'),
       rol: formData.get('userRole'),
       run: formData.get('userRun') || 'Sin-RUN', 
-      region: 'Metropolitana',
+      region: 'Metropolitana', // Valores por defecto si no se piden en el form
       comuna: 'Santiago',
       direccion: 'Dirección desconocida',
       password: formData.get('userPassword')
@@ -78,12 +78,17 @@ function AdminUsuarios() {
         }
         await apiService.post('/admin/usuarios', userData, true);
         if (window.showToast) window.showToast('Usuario creado correctamente', 'success');
-        fetchUsers();
-        handleCloseModal();
       } else {
-        if (window.showToast) window.showToast('Edición de usuarios no disponible en esta versión del backend', 'info');
-        handleCloseModal();
+        // Actualizar usuario existente
+        if (!userData.password) delete userData.password; // No enviar password si está vacío
+        
+        await apiService.put(`/admin/usuarios/${currentUser.id}`, userData);
+        if (window.showToast) window.showToast('Usuario actualizado correctamente', 'success');
       }
+      
+      fetchUsers();
+      handleCloseModal();
+
     } catch (error) {
       console.error(error);
       if (window.showToast) window.showToast('Error al guardar: ' + error.message, 'danger');
@@ -187,7 +192,7 @@ function AdminUsuarios() {
       <Modal show={showModal} onHide={handleCloseModal} className="custom-admin-modal">
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalMode === 'new' ? 'Nuevo Usuario' : 'Editar Usuario (Solo lectura)'}
+            {modalMode === 'new' ? 'Nuevo Usuario' : 'Editar Usuario'}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -222,7 +227,7 @@ function AdminUsuarios() {
               <Form.Control 
                 type="password" 
                 name="userPassword" 
-                placeholder={modalMode === 'edit' ? '' : 'Contraseña segura'}
+                placeholder={modalMode === 'edit' ? 'Nueva contraseña (opcional)' : 'Contraseña segura'}
               />
             </Form.Group>
 
@@ -241,7 +246,7 @@ function AdminUsuarios() {
             Cancelar
           </Button>
           <Button variant="success" type="submit" form="formUsuario">
-            {modalMode === 'new' ? 'Crear Usuario' : 'Guardar (Simulado)'}
+            {modalMode === 'new' ? 'Crear Usuario' : 'Guardar Cambios'}
           </Button>
         </Modal.Footer>
       </Modal>
