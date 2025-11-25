@@ -61,7 +61,7 @@ describe('AuthContext', () => {
     expect(localStorage.removeItem).toHaveBeenCalled();
   });
 
-  // --- PRUEBA 3 CORREGIDA: Manejo de Errores ---
+  // --- PRUEBA 3 
   it('debe lanzar un error si el login falla', async () => {
     // 1. Simulamos que el servidor responde con error
     spyOn(apiService, 'post').and.returnValue(Promise.reject(new Error('Credenciales inválidas')));

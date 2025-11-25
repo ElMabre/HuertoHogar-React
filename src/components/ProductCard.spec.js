@@ -1,9 +1,6 @@
-// src/components/ProductCard.spec.js
-
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
-// Importamos AMBOS providers, ya que CartProvider depende de ProductProvider
 import { CartProvider } from '../context/CartContext';
 import { ProductProvider } from '../context/ProductContext'; 
 
@@ -26,7 +23,6 @@ describe('ProductCard', () => {
   const renderComponent = () => {
     render(
       <Router>
-        {/* Envolvemos CartProvider con ProductProvider */}
         <ProductProvider>
           <CartProvider>
             <ProductCard product={mockProduct} />

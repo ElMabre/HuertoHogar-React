@@ -3,21 +3,14 @@ import { Container, Row, Col, Button, Image, Card, InputGroup, Form } from 'reac
 import { Link } from 'react-router-dom';
 import { useProducts } from '../context/ProductContext';
 import ProductCard from '../components/ProductCard';
-// Importamos nuestro hook personalizado para actualizar el título de la pestaña
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
 function HomePage() {
-  // Nuestro equipo desarrolló este hook para cambiar dinámicamente el título
-  // de la pestaña del navegador según la página actual, mejorando UX y SEO
   useDocumentTitle('Inicio'); 
-
-  // Obtenemos los productos destacados de nuestro contexto
   const { getFeaturedProducts } = useProducts();
-  const featuredProducts = getFeaturedProducts(3);  // Obtiene los primeros 3
-
+  const featuredProducts = getFeaturedProducts(3);  
   return (
     <>
-      { /* Hero Section (basado en Index.html) */ }
       <Container fluid className="hero text-white text-center py-5">
         <Row className="justify-content-center py-5">
           <Col lg={8}>

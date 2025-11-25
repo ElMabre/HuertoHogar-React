@@ -1,4 +1,3 @@
-// src/pages/RegisterPage.spec.js
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';

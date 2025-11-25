@@ -2,9 +2,6 @@ import React from 'react';
 import { Container, Row, Col, Card, Badge, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-// Datos de los artículos del blog (basado en tu blog-detalle.js)
-// En un proyecto más grande, esto estaría en su propio archivo o vendría de una API.
-
 function BlogPage() {
 const blogArticles = [
   {
@@ -74,8 +71,6 @@ const blogArticles = [
               <Card.Body className="d-flex flex-column">
                 <Badge bg="success" className="mb-2 align-self-start">{article.categoria}</Badge>
                 <Card.Title as="h5" className="card-title">{article.titulo}</Card.Title>
-                
-                {/* Usamos el contenido de texto plano para el resumen */}
                 <Card.Text className="text-muted">
                   {article.contenido.substring(0, 120)}...
                 </Card.Text>
@@ -87,7 +82,7 @@ const blogArticles = [
                   </small>
                   <Button
                     as={Link}
-                    to={`/blog/${article.id}`} // Enlace a la futura página de detalle
+                    to={`/blog/${article.id}`} 
                     variant="outline-success"
                     size="sm"
                   >
@@ -99,9 +94,6 @@ const blogArticles = [
           </Col>
         ))}
       </Row>
-
-      {/* Aquí podrías agregar la paginación de blog.html si fuera necesario */}
-      
     </Container>
   );
 }

@@ -4,18 +4,16 @@ import { Link } from 'react-router-dom';
 
 function Footer() {
   const currentYear = new Date().getFullYear();
-
-  // Estilos para los enlaces del footer (para que sean blancos como en la imagen)
   const footerLinkStyle = {
     color: 'white',
     textDecoration: 'none'
   };
 
   const footerLinkHoverStyle = {
-    color: 'var(--amarillo-mostaza)', // Usando tu variable de CSS
+    color: 'var(--amarillo-mostaza)', 
   };
   
-  // Componente simple para manejar el hover
+
   const FooterLink = ({ to, children }) => {
     const [hover, setHover] = React.useState(false);
     return (
@@ -25,7 +23,7 @@ function Footer() {
         style={hover ? { ...footerLinkStyle, ...footerLinkHoverStyle } : footerLinkStyle}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        className="p-0 mb-2" // Quitar padding y añadir margen
+        className="p-0 mb-2" 
       >
         {children}
       </Nav.Link>
@@ -34,12 +32,12 @@ function Footer() {
 
 
   return (
-    // Reconstruido basado en la imagen 'image_7f36e2.png'
+
     <footer style={{ backgroundColor: '#343a40', color: 'white' }} className="py-4 mt-auto">
       <Container>
         <Row className="py-3">
 
-          {/* Columna 1: HuertoHogar */}
+          {/* Columna 1: Información de la Empresa */}
           <Col md={4} className="mb-4 mb-md-0">
             <h5 className="fw-bold" style={{color: 'var(--marron-claro)'}}>HuertoHogar</h5>
             <p style={{color: 'var(--gris-claro)'}}>

@@ -32,9 +32,7 @@ function MapComponent() {
 
       const script = document.createElement('script');
       script.id = 'google-maps-script';
-      // Construye la URL usando la variable
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
-      // *** FIN DE LA CORRECCIÓN ***
 
       script.async = true;
       script.defer = true;
@@ -51,7 +49,6 @@ function MapComponent() {
   }, []);
 
   useEffect(() => {
-    // Añadimos la comprobación 'window.google.maps' para evitar el "crash"
     if (isApiLoaded && mapRef.current && window.google && window.google.maps) {
       const map = new window.google.maps.Map(mapRef.current, {
         zoom: 5,

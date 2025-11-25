@@ -1,8 +1,3 @@
-// src/components/LoginPage.spec.js
-
-// 'src/tests.entry.js' ya se encarga de las importaciones,
-// así que este archivo queda limpio.
-
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -52,9 +47,6 @@ describe('LoginPage', () => {
     fireEvent.change(emailInput, { target: { value: 'email-invalido' } });
     fireEvent.change(passwordInput, { target: { value: '1234' } });
     fireEvent.click(submitButton);
-    
-    // --- MODIFICACIÓN 2 ---
-    // Usamos .toBeTruthy() de nuevo
     expect(screen.getByText(/El formato del correo no es válido/i)).toBeTruthy();
     expect(mockLogin).not.toHaveBeenCalled();
   });

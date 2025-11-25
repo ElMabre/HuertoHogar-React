@@ -10,11 +10,8 @@ function CartPage() {
   useDocumentTitle('Carrito de Compras');
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  
-  // Estados para controlar los Modals
   const [showPayModal, setShowPayModal] = useState(false);
   const [showClearModal, setShowClearModal] = useState(false);
-
   const {
     cartItems,
     removeFromCart,
@@ -72,7 +69,6 @@ function CartPage() {
     setShowClearModal(true);
   };
 
-  // Confirmar vaciado (usa force=true para evitar window.confirm del context)
   const handleConfirmClear = () => {
     clearCart(true);
     setShowClearModal(false);
@@ -207,7 +203,6 @@ function CartPage() {
         </Col>
       </Row>
 
-      {/* Modal Confirmar Pago */}
       <Modal show={showPayModal} onHide={() => setShowPayModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title className="text-dark fw-bold">Confirmar Compra</Modal.Title>
@@ -233,7 +228,6 @@ function CartPage() {
         </Modal.Footer>
       </Modal>
 
-      {/* Modal Confirmar Vaciar Carrito */}
       <Modal show={showClearModal} onHide={() => setShowClearModal(false)} centered>
         <Modal.Header closeButton className="bg-danger text-white">
           <Modal.Title className="fw-bold text-white">Vaciar Carrito</Modal.Title>

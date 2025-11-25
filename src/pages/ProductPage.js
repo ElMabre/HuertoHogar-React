@@ -12,37 +12,23 @@ function ProductList() {
   const { products } = useProducts();
   
   const [filteredProducts, setFilteredProducts] = useState([]);
-  // El estado inicial sigue siendo vacío
   const [categoryFilter, setCategoryFilter] = useState(""); 
   const [searchFilter, setSearchFilter] = useState("");
-
-  // --- 2. OBTENER LOS PARÁMETROS DE LA URL ---
   const [searchParams] = useSearchParams();
-
-  // --- 3. AÑADIR ESTE NUEVO useEffect ---
-  // Este hook reacciona a los cambios en la URL (ej. ?categoria=frutas)
   useEffect(() => {
     const urlCategory = searchParams.get('categoria');
     if (urlCategory) {
-      // Si hay una categoría en la URL, la ponemos en el estado del filtro
       setCategoryFilter(urlCategory);
     } else {
-      // Si se navega a /productos sin categoría, reseteamos el filtro
       setCategoryFilter("");
     }
-  }, [searchParams]); // Se ejecuta cada vez que los parámetros de la URL cambian
+  }, [searchParams]); 
 
-  // Este useEffect (que ya tenías) se ejecutará automáticamente
-  // después de que el hook de arriba actualice el 'categoryFilter'
   useEffect(() => {
     let tempProducts = [...products];
-    
-    // Filtrar por categoría
     if (categoryFilter) {
       tempProducts = tempProducts.filter(p => p.categoria === categoryFilter);
     }
-    
-    // Filtrar por búsqueda
     if (searchFilter) {
       const searchTerm = searchFilter.toLowerCase();
       tempProducts = tempProducts.filter(p =>
@@ -53,7 +39,7 @@ function ProductList() {
     }
     
     setFilteredProducts(tempProducts);
-  }, [products, categoryFilter, searchFilter]); // Dependencias correctas
+  }, [products, categoryFilter, searchFilter]); 
 
   return (
     <Container className="my-5">
@@ -63,7 +49,6 @@ function ProductList() {
         <Col md={6} className="mb-3 mb-md-0">
           <Form.Select
             id="categoriaFilter"
-            // 4. El 'value' ahora se sincronizará con la URL
             value={categoryFilter} 
             onChange={(e) => setCategoryFilter(e.target.value)}
           >

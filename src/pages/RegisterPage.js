@@ -89,7 +89,7 @@ function RegistrationPage() {
     setServerError('');
 
     try {
-      // Llamada al AuthContext (que llama al ms-usuarios en puerto 8081)
+      // Llamada al AuthContext 
       await register(formData);
       
       setShowSuccess(true);

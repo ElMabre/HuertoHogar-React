@@ -31,10 +31,10 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // Función de Login (Conectada al Backend)
+  // Función de Login 
   const login = async (email, pass) => {
     try {
-      // Llamamos al backend (apiService se encarga de elegir el puerto 8081)
+      // Llamamos al backend 
       const authResponse = await apiService.post('/auth/login', {
         email: email,
         password: pass

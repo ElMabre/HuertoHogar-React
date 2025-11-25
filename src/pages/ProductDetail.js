@@ -42,9 +42,6 @@ function ProductDetail() {
 
   const handleAddToCart = () => {
     if (!product) return;
-    
-    // CORRECCIÓN: Solo llamamos a addToCart.
-    // La notificación de "Producto añadido" la maneja centralmente el CartContext.
     addToCart(product.id, quantity);
   };
 

@@ -10,10 +10,7 @@ import { AuthProvider } from './context/AuthContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  /* <React.StrictMode> 
-     Se comenta StrictMode para evitar que los useEffect se ejecuten dos veces 
-     en desarrollo, lo que causaba duplicidad en las notificaciones. 
-  */
+
   <AuthProvider>
     <ProductProvider>
       <CartProvider>
@@ -21,5 +18,4 @@ root.render(
       </CartProvider>
     </ProductProvider>
   </AuthProvider>
-  /* </React.StrictMode> */
 );

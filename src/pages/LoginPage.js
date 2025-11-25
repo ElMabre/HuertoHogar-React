@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, InputGroup, Alert } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // <-- 1. IMPORTAR useAuth
+import { useAuth } from '../context/AuthContext'; 
 import useDocumentTitle from '../hooks/useDocumentTitle';
-// --- Funciones de Validación (de tu validaciones.js) ---
+
 const validarEmail = ( email ) => {
   if (!email || typeof email !== 'string') return false;
-  // Esta es la validación que usa tu AuthContext (admin@huerto.hogar)
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
   return regex.test(email.trim());
 };
 const validarPassword = ( pass ) => {
-  if (!pass || typeof pass !== 'string') return false; // Añadida verificación de string
-  return pass.length >= 4 && pass.length <= 10;
+  if (!pass || typeof pass !== 'string') return false; 
 };
 // -----------------------------------------------------
 
@@ -20,24 +18,18 @@ function LoginPage() {
   useDocumentTitle('Iniciar Sesión');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');  // Para errores de login (ej. "pass incorrecto")
-  const [validationErrors, setValidationErrors] = useState({});  // Para errores de formulario
+  const [error, setError] = useState('');  
+  const [validationErrors, setValidationErrors] = useState({});  
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();  // Hook para redirigir
-  
-  const { login } = useAuth(); // <-- 2. OBTENER LA FUNCIÓN 'login' DEL CONTEXTO
-
-  // --- 3. LA FUNCIÓN LOCAL 'loginUsuario'  SE ELIMINA ---
+  const navigate = useNavigate(); 
+  const { login } = useAuth(); 
 
   const handleSubmit = ( e ) => {
     e.preventDefault();
     setError('');
     setValidationErrors({});
-
-    // 1. Validar formulario
     const newErrors = {};
     if (!validarEmail(email)) {
-      // Mensaje de error genérico para login
       newErrors.email = "El formato del correo no es válido."; 
     }
     if (!validarPassword(password)) {
@@ -48,21 +40,14 @@ function LoginPage() {
       return;
     }
 
-    // 2. Intentar login (AHORA USANDO LA FUNCIÓN DEL CONTEXTO)
-    const user = login(email, password); // <-- 4. USAR LA FUNCIÓN 'login' DEL CONTEXTO
-
+    const user = login(email, password); 
     if (user) {
-      // 3. Login exitoso
-      // (AuthContext se encarga de guardar en localStorage y actualizar el estado)
-      
-      // Redirigir según el rol
       if (user.rol === 'admin') {
-        navigate('/admin'); // Redirige al Panel de Admin
+        navigate('/admin'); 
       } else {
-        navigate('/');  // Redirige al Home
+        navigate('/');  
       }
     } else {
-      // 4. Falla el login
       setError('Correo o contraseña incorrectos.');
     }
   };

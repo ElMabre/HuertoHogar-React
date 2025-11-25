@@ -1,30 +1,22 @@
 import React from 'react';
 import { Container, Row, Col, Nav } from 'react-bootstrap';
-import { Link, Outlet, useLocation } from 'react-router-dom'; // Outlet para renderizar sub-rutas
-import { useAuth } from '../context/AuthContext'; // Para obtener datos del admin
-
-// Importamos estilos específicos si los creamos más adelante
-// import './AdminPage.css'; 
-
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; 
 function AdminPage() {
-  const { currentUser } = useAuth(); // Obtener el usuario actual
-  const location = useLocation(); // Para saber qué link está activo
+  const { currentUser } = useAuth(); 
+  const location = useLocation();
 
-  // Si no hay usuario o no es admin, podríamos redirigir o mostrar un mensaje
-  // Por ahora, asumimos que llegamos aquí protegidos (lo haremos en App.js)
 
   return (
     <Container fluid>
       <Row>
-        {/* Sidebar */}
-        <Col md={3} lg={2} className="bg-light sidebar pt-3 vh-100" // vh-100 para altura completa
+     
+        <Col md={3} lg={2} className="bg-light sidebar pt-3 vh-100"
           style={{
-            position: 'sticky', // Fija la sidebar
-            top: 0, // Pégala arriba
-            borderRight: '1px solid #dee2e6' // Borde como en el original
+            position: 'sticky', 
+            top: 0, 
+            borderRight: '1px solid #dee2e6' 
           }}>
-          
-          {/* Nombre del Admin (como en el original) */}
           {currentUser && (
             <div className="px-3 mb-3 text-center">
               <i className="bi bi-person-circle fs-4 me-2" style={{color: 'var(--verde-esmeralda)'}}></i>
@@ -40,11 +32,8 @@ function AdminPage() {
               </span>
             </div>
           )}
-
-          {/* Menú de Navegación */}
           <Nav className="flex-column">
             <Nav.Item>
-              {/* Usamos NavLink de react-router para el estado activo */}
               <Nav.Link 
                 as={Link} 
                 to="/admin/dashboard" 
@@ -106,7 +95,6 @@ function AdminPage() {
 
         {/* Contenido Principal */}
         <Col md={9} lg={10} className="ms-sm-auto px-md-4 py-4">
-          {/* El componente <Outlet> renderizará aquí las sub-rutas (Dashboard, Productos, etc.) */}
           <Outlet /> 
         </Col>
       </Row>

@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-// 1. IMPORTACIÓN ACTUALIZADA: Añadimos 'Button'
 import { Container, Row, Col, Badge, Image, Breadcrumb, Alert, ListGroup, Button } from 'react-bootstrap';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-
-// --- Datos del Blog (AHORA SIN HTML) ---
 const blogArticles = [
   {
     id: "1",
@@ -43,10 +40,7 @@ const blogArticles = [
     imagen: "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
   }
 ];
-// --- Fin de los datos ---
 
-// --- Componente de Contenido de Artículo ---
-// Esto renderiza el contenido correcto basado en el ID
 const ArticleContent = ({ id }) => {
   switch (id) {
     case '1':
@@ -213,14 +207,12 @@ function BlogDetail() {
               <ArticleContent id={article.id} />
             </div>
 
-            { /* 2. FOOTER ACTUALIZADO */ }
             <footer className="mt-5 pt-4 border-top">
-              {/* Replicamos la estructura del original [cite: 5094-5108] */}
+              
               <div className="d-flex justify-content-between align-items-center">
                 <div>
                   <strong>Comparte este artículo:</strong>
                   <div className="btn-group ms-2">
-                    {/* Usamos 'Button' de react-bootstrap y 'as="a"' para que actúen como enlaces */}
                     <Button variant="outline-primary" size="sm" as="a" href="#" title="Compartir en Facebook">
                       <i className="bi bi-facebook"></i>
                     </Button>

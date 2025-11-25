@@ -1,54 +1,37 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, InputGroup, Alert } from 'react-bootstrap';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-// Función de validación (basada en tu validaciones.js)
 const validateEmail = (email) => {
   if (!email) return false;
-  // Simplificamos la regex para React, ya que la restricción de dominios no estaba en el HTML
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email.trim());
 };
 
 function ContactoPage() {
   useDocumentTitle('Contacto');
-  // Estado para los campos del formulario
   const [formData, setFormData] = useState({
     nombre: '',
     email: '',
     asunto: '',
     mensaje: ''
   });
-
-  // Estado para los errores de validación
   const [errors, setErrors] = useState({});
-  
-  // Estado para el contador de caracteres
   const [charCount, setCharCount] = useState(500);
-
-  // Estado para mostrar mensaje de éxito
   const [showSuccess, setShowSuccess] = useState(false);
-
-  // Manejador para actualizar el estado cuando el usuario escribe
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData({
       ...formData,
       [id]: value
     });
-
-    // Lógica del contador de caracteres
     if (id === 'mensaje') {
       const remaining = 500 - value.length;
       setCharCount(remaining);
     }
   };
-
-  // Manejador para el envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = {};
-
-    // Validaciones (basadas en tu validaciones.js y contacto.js)
     if (!formData.nombre || formData.nombre.trim().length === 0 || formData.nombre.length > 100) {
       newErrors.nombre = "El nombre es requerido (máx. 100 caracteres)";
     }
@@ -60,19 +43,12 @@ function ContactoPage() {
     }
 
     setErrors(newErrors);
-
-    // Si no hay errores, procesar el envío
     if (Object.keys(newErrors).length === 0) {
       console.log('Formulario enviado:', formData);
-      // Aquí iría la lógica para enviar a un backend
-      
-      // Mostrar éxito y limpiar formulario
       setShowSuccess(true);
       setFormData({ nombre: '', email: '', asunto: '', mensaje: '' });
       setCharCount(500);
       setErrors({});
-      
-      // Ocultar el mensaje después de 5 segundos
       setTimeout(() => setShowSuccess(false), 5000);
     }
   };

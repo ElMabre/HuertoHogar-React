@@ -1,5 +1,3 @@
-// src/services/apiService.js
-
 const API_BASE = 'http://18.211.31.168/api'; 
 
 
@@ -7,9 +5,7 @@ const USERS_API_URL = API_BASE;
 const CATALOG_API_URL = API_BASE; 
 const ORDERS_API_URL = API_BASE;
 
-/**
- * Función inteligente para elegir el puerto correcto según el endpoint
- */
+
 const getBaseUrl = (endpoint) => {
     // 1. Microservicio de USUARIOS (8081)
     if (endpoint.startsWith('/auth') || endpoint.includes('/admin/usuarios')) {
@@ -23,8 +19,6 @@ const getBaseUrl = (endpoint) => {
     if (endpoint.startsWith('/pedidos') || endpoint.includes('/admin/pedidos')) {
         return ORDERS_API_URL;
     }
-    
-    // Default (por seguridad)
     return USERS_API_URL;
 };
 
@@ -72,11 +66,11 @@ const request = async (endpoint, method = 'GET', body = null, isPrivate = false)
         config.body = JSON.stringify(body);
     }
 
-    // AQUÍ OCURRE LA MAGIA: Seleccionamos la URL base dinámicamente
+    // Seleccionamos la URL base dinámicamente
     const baseUrl = getBaseUrl(endpoint);
     const fullUrl = `${baseUrl}${endpoint}`;
 
-    console.log(`[API] Llamando a: ${fullUrl}`); // Log para depurar
+    console.log(`[API] Llamando a: ${fullUrl}`); 
 
     try {
         const response = await fetch(fullUrl, config);

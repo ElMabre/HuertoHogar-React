@@ -41,22 +41,17 @@ function App() {
 
   window.showToast = (message, type = 'info') => {
     setToasts((currentToasts) => {
-      // 1. Evitar duplicados exactos consecutivos
       if (currentToasts.length > 0) {
         const lastToast = currentToasts[currentToasts.length - 1];
         if (lastToast.message === message) {
           return currentToasts;
         }
       }
-
-      // 2. Crear nueva notificación con ID único
       const newToast = { 
         id: Date.now() + Math.random(), 
         message, 
         type 
       };
-
-      // 3. Limitar a máximo 3 notificaciones visibles
       const updatedToasts = [...currentToasts, newToast];
       if (updatedToasts.length > 3) {
         return updatedToasts.slice(updatedToasts.length - 3);
@@ -78,7 +73,6 @@ function App() {
         <Navigation />
         <main style={{ flex: 1 }}>
           <Routes>
-            {/* Rutas Públicas */}
             <Route path="/" element={<HomePage />} />
             <Route path="/productos" element={<ProductPage />} />
             <Route path="/nosotros" element={<NosotrosPage />} />
@@ -89,8 +83,6 @@ function App() {
             <Route path="/carrito" element={<CartPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/registro" element={<RegistrationPage />} />
-
-            {/* Rutas de Administración */}
             <Route
               path="/admin"
               element={
@@ -106,14 +98,10 @@ function App() {
               <Route path="pedidos" element={<AdminPedidos />} />
               <Route path="configuracion" element={<AdminConfig />} />
             </Route>
-
-            {/* Ruta 404 */}
             <Route path="*" element={<Container className="my-5"><h1>404 - Página no encontrada</h1></Container>} />
           </Routes>
         </main>
         <Footer />
-
-        {/* Contenedor de Notificaciones */}
         <ToastContainer
           position="top-end"
           className="p-3"
