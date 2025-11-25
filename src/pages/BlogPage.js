@@ -2,7 +2,18 @@ import React from 'react';
 import { Container, Row, Col, Card, Badge, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+
+/**
+ * BlogPage Component
+ * Esto lo que hace es: Renderiza una página con un listado de artículos de blog en formato de tarjetas
+ * Esto es para: Mostrar el catálogo de artículos disponibles y permitir que los usuarios naveguen a cada uno
+ */
 function BlogPage() {
+/**
+ * Array de artículos del blog
+ * Esto lo que hace is: Define los datos de todos los artículos disponibles (id, título, categoría, fecha, autor, etc.)
+ * Esto es para: Simular una base de datos de blog para demostración (en producción vendría de una API)
+ */
 const blogArticles = [
   {
     id: "1",
@@ -46,10 +57,12 @@ const blogArticles = [
   }
 ];
 
+  // Hook personalizado para actualizar el título del documento
   useDocumentTitle('Blog');
+  
   return (
     <Container className="my-5">
-      {/* Título de la sección */}
+      {/* Encabezado de la página con título y descripción */}
       <div className="text-center mb-5">
         <h1 className="section-title">Blog de HuertoHogar</h1>
         <p className="lead text-muted">
@@ -57,29 +70,38 @@ const blogArticles = [
         </p>
       </div>
 
-      {/* Listado de artículos */}
+      {/* Grid responsivo de tarjetas de artículos */}
       <Row xs={1} md={2} lg={3} className="g-4">
+        {/* Renderizar cada artículo como una tarjeta */}
         {blogArticles.map((article) => (
           <Col key={article.id}>
             <Card className="h-100 shadow-sm">
+              {/* Imagen destacada del artículo */}
               <Card.Img
                 variant="top"
                 src={article.imagen}
                 alt={article.titulo}
                 style={{ height: '250px', objectFit: 'cover' }}
               />
+              {/* Contenido de la tarjeta */}
               <Card.Body className="d-flex flex-column">
+                {/* Badge de categoría del artículo */}
                 <Badge bg="success" className="mb-2 align-self-start">{article.categoria}</Badge>
+                {/* Título del artículo */}
                 <Card.Title as="h5" className="card-title">{article.titulo}</Card.Title>
+                {/* Resumen truncado del contenido (primeros 120 caracteres) */}
                 <Card.Text className="text-muted">
                   {article.contenido.substring(0, 120)}...
                 </Card.Text>
                 
+                {/* Pie de la tarjeta con fecha y botón de lectura */}
                 <div className="mt-auto d-flex justify-content-between align-items-center">
+                  {/* Fecha de publicación del artículo */}
                   <small className="text-muted">
                     <i className="bi bi-calendar me-1"></i>
                     {article.fecha}
                   </small>
+                  {/* Botón para navegar al artículo completo */}
                   <Button
                     as={Link}
                     to={`/blog/${article.id}`} 

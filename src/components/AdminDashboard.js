@@ -12,6 +12,7 @@ import {
   Legend,
 } from 'chart.js';
 
+// Registra los módulos de Chart.js para usar gráficos de barras
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -21,6 +22,7 @@ ChartJS.register(
   Legend
 );
 
+// Datos de ventas mensuales para el gráfico anual
 const salesData = {
   labels: [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -36,6 +38,7 @@ const salesData = {
   }]
 };
 
+// Configuración del gráfico: formatea valores en formato moneda CLP
 const salesOptions = {
   responsive: true,
   plugins: {
@@ -46,7 +49,6 @@ const salesOptions = {
     y: {
       beginAtZero: true, 
       ticks: {
-
         callback: function(value) {
           return '$' + value.toLocaleString('es-CL'); 
         }
@@ -55,6 +57,7 @@ const salesOptions = {
   }
 };
 
+// Listado de productos más vendidos
 const popularProducts = [
   { name: 'Manzanas Fuji', count: 45 }, 
   { name: 'Naranjas Valencia', count: 38 }, 
@@ -63,13 +66,15 @@ const popularProducts = [
   { name: 'Espinacas Frescas', count: 25 }, 
 ];
 
+// Componente principal del panel administrativo con métricas y gráficos
 function AdminDashboard() {
-    useDocumentTitle('Admin: Dashboard');
+  useDocumentTitle('Admin: Dashboard');
   return (
     <Container fluid>
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 className="h2">Dashboard</h1>
       </div>
+      {/* Tarjetas de métricas principales: ventas, pedidos, usuarios y productos */}
       <Row>
         <Col md={3} className="mb-4">
           <Card className="border-0 shadow-sm">
@@ -80,7 +85,7 @@ function AdminDashboard() {
                   <h3 className="card-text">$2.450.000</h3>
                 </div>
                 <div className="flex-shrink-0">
-                  <i className="bi bi-currency-dollar display-6 text-success"></i> {/* [cite: 2417] */}
+                  <i className="bi bi-currency-dollar display-6 text-success"></i>
                 </div>
               </div>
             </Card.Body>
@@ -133,14 +138,15 @@ function AdminDashboard() {
         </Col>
       </Row>
 
-      {/* Gráfico y Productos Populares */}
+      {/* Sección de gráfico de ventas mensuales y productos más vendidos */}
       <Row>
         <Col md={8} className="mb-4">
           <Card className="border-0 shadow-sm">
             <Card.Header className="bg-white">
-              <h6 className="card-title mb-0">Ventas Mensuales</h6> 
+              <h6 className="card-title mb-0">Ventas Mensuales</h6>
             </Card.Header>
             <Card.Body>
+              {/* Gráfico de barras con datos de ventas del año */}
               <Bar data={salesData} options={salesOptions} height={100} /> 
             </Card.Body>
           </Card>
@@ -148,8 +154,9 @@ function AdminDashboard() {
         <Col md={4} className="mb-4">
           <Card className="border-0 shadow-sm">
             <Card.Header className="bg-white">
-              <h6 className="card-title mb-0">Productos Populares</h6> 
+              <h6 className="card-title mb-0">Productos Populares</h6>
             </Card.Header>
+            {/* Listado de productos más vendidos con contadores */}
             <ListGroup variant="flush">
               {popularProducts.map((product) => (
                 <ListGroup.Item key={product.name} className="d-flex justify-content-between align-items-center">

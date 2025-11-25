@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Container, Row, Col, Badge, Image, Breadcrumb, Alert, ListGroup, Button } from 'react-bootstrap';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+
+/**
+ * Array de artículos de blog
+ * Esto lo que hace es: Define los datos de los artículos disponibles (id, categoría, título, fecha, autor, etc.)
+ * Esto es para: Simular una base de datos de blog para demostración (en producción vendría de una API)
+ */
 const blogArticles = [
   {
     id: "1",
@@ -41,11 +47,17 @@ const blogArticles = [
   }
 ];
 
+/**
+ * Componente: ArticleContent
+ * Esto lo que hace es: Renderiza el contenido específico de cada artículo según su ID
+ * Esto es para: Mostrar el cuerpo del artículo con textos, listas, alertas e iconos personalizados por tema
+ */
 const ArticleContent = ({ id }) => {
   switch (id) {
     case '1':
       return (
         <>
+          {/* Artículo 1: Beneficios de comer orgánico */}
           <h4><i className="bi bi-heart-pulse-fill text-success me-2"></i> ¿Por qué elegir productos orgánicos?</h4>
           <p>
             Los productos orgánicos son cultivados sin pesticidas ni fertilizantes
@@ -84,6 +96,7 @@ const ArticleContent = ({ id }) => {
     case '2':
       return (
         <>
+          {/* Artículo 2: Cómo reducir tu huella de carbono */}
           <h4><i className="bi bi-globe2 text-info me-2"></i> ¿Qué es la huella de carbono?</h4>
           <p>
             Es la cantidad total de gases de efecto invernadero emitidos por nuestras
@@ -106,6 +119,7 @@ const ArticleContent = ({ id }) => {
     case '3':
       return (
         <>
+          {/* Artículo 3: Guía para crear tu huerto urbano */}
           <h4><i className="bi bi-flower1 text-success me-2"></i> ¿Cómo empezar tu huerto en casa?</h4>
           <ol className="list-group list-group-numbered">
             <ListGroup.Item as="li"><strong>Elige el lugar:</strong> Busca un espacio con buena luz natural.</ListGroup.Item>
@@ -127,6 +141,7 @@ const ArticleContent = ({ id }) => {
     case '4':
       return (
         <>
+          {/* Artículo 4: 5 recetas con productos de temporada */}
           <h4><i className="bi bi-egg-fried text-danger me-2"></i> Recetas fáciles y deliciosas</h4>
           <ListGroup variant="flush">
             <ListGroup.Item><strong>Ensalada de espinaca y nueces:</strong> Espinaca fresca, nueces, queso de cabra y vinagreta de miel.</ListGroup.Item>
@@ -149,12 +164,21 @@ const ArticleContent = ({ id }) => {
 };
 
 function BlogDetail() {
+  // Obtener el ID del artículo desde la URL
   const { id } = useParams();
+  // Estado para almacenar el artículo encontrado
   const [article, setArticle] = useState(null);
+  // Estado para controlar si se está cargando el artículo
   const [loading, setLoading] = useState(true);
   
+  // Hook personalizado para actualizar el título del documento (meta tag) dinámicamente
   useDocumentTitle(article ? article.titulo : 'Blog');
 
+  /**
+   * Efecto: Buscar el artículo por ID
+   * Esto lo que hace is: Busca en el array blogArticles el artículo que coincida con el ID de la URL
+   * Esto es para: Cargar el contenido específico del artículo solicitado
+   */
   useEffect(() => {
     const foundArticle = blogArticles.find(a => a.id === id);
     if (foundArticle) {
@@ -163,28 +187,32 @@ function BlogDetail() {
     setLoading(false);
   }, [id]);
 
+  // Si aún está cargando, mostrar mensaje de carga
   if (loading) {
     return <Container className="my-5"><p>Cargando artículo...</p></Container>;
   }
 
+  // Si no encontró el artículo, redirigir al blog
   if (!article) {
     return <Navigate to="/blog" replace />;
   }
 
   return (
     <Container className="my-5">
-      { /* Breadcrumb */ }
+      {/* Navegación breadcrumb para contexto de ubicación */}
       <Breadcrumb className="mb-4">
         <Breadcrumb.Item as={Link} to="/">Inicio</Breadcrumb.Item>
         <Breadcrumb.Item as={Link} to="/blog">Blog</Breadcrumb.Item>
         <Breadcrumb.Item active>{article.titulo}</Breadcrumb.Item>
       </Breadcrumb>
       
-      { /* Contenido del artículo */ }
+      {/* Sección del artículo con encabezado, imagen y contenido */}
       <article>
+        {/* Encabezado del artículo: categoría, título y metadata */}
         <header className="text-center mb-5">
           <Badge bg="success" className="mb-2">{article.categoria}</Badge>
           <h1 className="section-title">{article.titulo}</h1>
+          {/* Información del artículo: fecha, autor, tiempo de lectura */}
           <div className="text-muted">
             <i className="bi bi-calendar me-1"></i>{article.fecha}
             <i className="bi bi-person ms-3 me-1"></i>Por {article.autor}
@@ -192,8 +220,10 @@ function BlogDetail() {
           </div>
         </header>
         
+        {/* Contenido centrado en Grid de Bootstrap */}
         <Row className="justify-content-center">
           <Col lg={8}>
+            {/* Imagen destacada del artículo */}
             <Image
               src={article.imagen}
               alt={article.titulo}
@@ -203,12 +233,15 @@ function BlogDetail() {
               style={{width: '100%', maxHeight: '450px', objectFit: 'cover'}}
             />
 
+            {/* Contenido dinámico según el ID del artículo */}
             <div className="blog-content">
               <ArticleContent id={article.id} />
             </div>
 
+            {/* Pie de página con opciones de compartir y botón volver */}
             <footer className="mt-5 pt-4 border-top">
               
+              {/* Botones para compartir en redes sociales */}
               <div className="d-flex justify-content-between align-items-center">
                 <div>
                   <strong>Comparte este artículo:</strong>
@@ -225,6 +258,7 @@ function BlogDetail() {
                   </div>
                 </div>
             
+                {/* Botón para volver a la página de blog */}
                 <Link to="/blog" className="btn btn-outline-secondary">
                   <i className="bi bi-arrow-left me-1"></i>Volver al blog
                 </Link>

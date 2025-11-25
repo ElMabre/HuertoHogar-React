@@ -3,9 +3,11 @@ import { Container, Button, Table, Badge, Modal, Form, Row, Col } from 'react-bo
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { apiService } from '../services/apiService';
 
+// Componente para gestionar usuarios del sistema (crear, editar, eliminar)
 function AdminUsuarios() {
   useDocumentTitle('Admin: Usuarios');
 
+  // Estados para la lista de usuarios, carga y control del modal
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -13,6 +15,7 @@ function AdminUsuarios() {
   const [modalMode, setModalMode] = useState('new');
   const [currentUser, setCurrentUser] = useState(null);
 
+  // Obtiene la lista de usuarios desde la API
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -30,22 +33,26 @@ function AdminUsuarios() {
     fetchUsers();
   }, [fetchUsers]);
 
+  // Abre el modal en modo creación o edición
   const handleShowModal = (mode, user = null) => {
     setModalMode(mode);
     setCurrentUser(user);
     setShowModal(true);
   };
 
+  // Cierra el modal y limpia los datos
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentUser(null);
   };
 
+  // Elimina un usuario después de confirmar
   const handleDelete = async (id) => {
     if (window.confirm(`¿Estás seguro de eliminar al usuario ID: ${id}?`)) {
       try {
         await apiService.delete(`/admin/usuarios/${id}`);
         if (window.showToast) window.showToast(`Usuario eliminado correctamente`, 'success');
+        // Recarga la lista después de eliminar
         fetchUsers();
       } catch (error) {
         console.error(error);
@@ -54,17 +61,19 @@ function AdminUsuarios() {
     }
   };
 
+  // Guarda un usuario nuevo o actualiza uno existente
   const handleSaveUser = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
+    // Estructura de datos del usuario a guardar
     const userData = {
       nombre: formData.get('userName'),
       apellido: formData.get('userLastName'),
       email: formData.get('userEmail'),
       rol: formData.get('userRole'),
       run: formData.get('userRun') || 'Sin-RUN', 
-      region: 'Metropolitana', // Valores por defecto si no se piden en el form
+      region: 'Metropolitana', // Valores por defecto
       comuna: 'Santiago',
       direccion: 'Dirección desconocida',
       password: formData.get('userPassword')
@@ -72,6 +81,7 @@ function AdminUsuarios() {
 
     try {
       if (modalMode === 'new') {
+        // Validación de contraseña para nuevos usuarios
         if (!userData.password) {
             if (window.showToast) window.showToast('La contraseña es obligatoria para nuevos usuarios', 'warning');
             return;
@@ -80,12 +90,14 @@ function AdminUsuarios() {
         if (window.showToast) window.showToast('Usuario creado correctamente', 'success');
       } else {
         // Actualizar usuario existente
-        if (!userData.password) delete userData.password; // No enviar password si está vacío
+        // No enviar password si está vacío
+        if (!userData.password) delete userData.password;
         
         await apiService.put(`/admin/usuarios/${currentUser.id}`, userData);
         if (window.showToast) window.showToast('Usuario actualizado correctamente', 'success');
       }
       
+      // Recarga la lista de usuarios después de guardar
       fetchUsers();
       handleCloseModal();
 
@@ -131,6 +143,7 @@ function AdminUsuarios() {
         `}
       </style>
 
+      {/* Encabezado con título y botón para agregar nuevo usuario */}
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 className="h2">Gestión de Usuarios</h1>
         <Button variant="success" onClick={() => handleShowModal('new')}>
@@ -138,6 +151,7 @@ function AdminUsuarios() {
         </Button>
       </div>
 
+      {/* Tabla listando todos los usuarios con acciones */}
       <div className="table-responsive">
         <Table striped hover>
           <thead>
@@ -155,17 +169,20 @@ function AdminUsuarios() {
             ) : users.length === 0 ? (
                 <tr><td colSpan="5" className="text-center">No hay usuarios registrados.</td></tr>
             ) : (
+                // Renderiza cada usuario con sus datos y botones de editar/eliminar
                 users.map(user => (
                 <tr key={user.id}>
                     <td>{user.id}</td>
                     <td>{user.nombre} {user.apellido}</td>
                     <td>{user.email}</td>
                     <td>
+                        {/* Badge con color según el rol del usuario */}
                         <Badge bg={user.rol === 'ADMIN' ? 'danger' : user.rol === 'VENDEDOR' ? 'warning' : 'info'}>
                             {user.rol}
                         </Badge>
                     </td>
                     <td>
+                    {/* Botones para editar y eliminar usuario */}
                     <Button
                         variant="outline-primary"
                         size="sm"
@@ -189,6 +206,7 @@ function AdminUsuarios() {
         </Table>
       </div>
 
+      {/* Modal para crear o editar usuario */}
       <Modal show={showModal} onHide={handleCloseModal} className="custom-admin-modal">
         <Modal.Header closeButton>
           <Modal.Title>
@@ -197,6 +215,7 @@ function AdminUsuarios() {
         </Modal.Header>
         <Modal.Body>
           <Form id="formUsuario" onSubmit={handleSaveUser}>
+            {/* Nombre y apellido */}
             <Row>
               <Col md={6} className="mb-3">
                 <Form.Group controlId="userName">
@@ -212,6 +231,7 @@ function AdminUsuarios() {
               </Col>
             </Row>
             
+            {/* RUN, Email y Contraseña */}
             <Form.Group className="mb-3" controlId="userRun">
                 <Form.Label>RUN</Form.Label>
                 <Form.Control type="text" name="userRun" defaultValue={currentUser?.run} placeholder="12345678-9" />
@@ -231,6 +251,7 @@ function AdminUsuarios() {
               />
             </Form.Group>
 
+            {/* Rol del usuario */}
             <Form.Group className="mb-3" controlId="userRole">
               <Form.Label>Rol</Form.Label>
               <Form.Select name="userRole" defaultValue={currentUser?.rol || 'CLIENTE'} required>
@@ -245,6 +266,7 @@ function AdminUsuarios() {
           <Button variant="secondary" onClick={handleCloseModal}>
             Cancelar
           </Button>
+          {/* Botón guardar con texto dinámico según modo */}
           <Button variant="success" type="submit" form="formUsuario">
             {modalMode === 'new' ? 'Crear Usuario' : 'Guardar Cambios'}
           </Button>

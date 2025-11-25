@@ -3,9 +3,11 @@ import { Container, Button, Table, Badge, Modal, Form, ListGroup, Row, Col } fro
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { apiService } from '../services/apiService';
 
+// Componente para gestionar y visualizar todos los pedidos del sistema
 function AdminPedidos() {
   useDocumentTitle('Admin: Pedidos');
 
+  // Estados para gestionar la lista de pedidos, carga y modales
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -13,11 +15,13 @@ function AdminPedidos() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
+  // Obtiene la lista de pedidos desde la API y mapea los datos
   const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
       const data = await apiService.get('/admin/pedidos', true);
       
+      // Transforma los datos de la API al formato esperado por la interfaz
       const mappedOrders = data.map(pedido => ({
         ...pedido,
         cliente: pedido.usuario ? `${pedido.usuario.nombre} ${pedido.usuario.apellido}` : 'Usuario Desconocido',
@@ -42,6 +46,7 @@ function AdminPedidos() {
     fetchOrders();
   }, [fetchOrders]);
 
+  // Retorna las clases CSS según el estado del pedido
   const getBadgeClass = (estado) => {
     const classes = {
       'Completado': 'bg-success',
@@ -52,22 +57,26 @@ function AdminPedidos() {
     return classes[estado] || 'bg-secondary';
   };
 
+  // Abre el modal para visualizar detalles del pedido
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
     setShowViewModal(true);
   };
 
+  // Abre el modal para editar el estado del pedido
   const handleEditOrder = (order) => {
     setSelectedOrder(order);
     setShowEditModal(true);
   };
 
+  // Cierra todos los modales y limpia la selección
   const handleCloseModals = () => {
     setShowViewModal(false);
     setShowEditModal(false);
     setSelectedOrder(null);
   };
 
+  // Guarda el cambio de estado del pedido en la API
   const handleSaveStatus = async (e) => {
     e.preventDefault();
     if (!selectedOrder) return;
@@ -80,6 +89,7 @@ function AdminPedidos() {
       
       if (window.showToast) window.showToast('Estado del pedido actualizado', 'success');
       
+      // Recarga la lista de pedidos después del cambio
       await fetchOrders();
       handleCloseModals();
     } catch (error) {
@@ -118,6 +128,7 @@ function AdminPedidos() {
         `}
       </style>
 
+      {/* Encabezado y botón de actualización */}
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 className="h2">Gestión de Pedidos</h1>
         <Button variant="outline-secondary" size="sm" onClick={fetchOrders}>
@@ -125,6 +136,7 @@ function AdminPedidos() {
         </Button>
       </div>
 
+      {/* Tabla con listado de todos los pedidos */}
       <div className="table-responsive">
         <Table striped hover>
           <thead>
@@ -144,6 +156,7 @@ function AdminPedidos() {
             ) : orders.length === 0 ? (
                  <tr><td colSpan="7" className="text-center">No hay pedidos registrados.</td></tr>
             ) : (
+                // Itera y renderiza cada pedido con sus acciones
                 orders.map(pedido => (
                 <tr key={pedido.id}>
                     <td>{pedido.id}</td>
@@ -157,6 +170,7 @@ function AdminPedidos() {
                     </td>
                     <td>{pedido.metodoPago}</td>
                     <td>
+                    {/* Botones para ver y editar pedidos */}
                     <Button
                         variant="outline-primary"
                         size="sm"
@@ -180,6 +194,7 @@ function AdminPedidos() {
         </Table>
       </div>
 
+      {/* Modal para visualizar detalles completos del pedido */}
       <Modal show={showViewModal} onHide={handleCloseModals} size="lg" className="custom-admin-modal">
         <Modal.Header closeButton>
           <Modal.Title>Detalle del Pedido: #{selectedOrder?.id}</Modal.Title>
@@ -205,8 +220,9 @@ function AdminPedidos() {
               <Col md={6}>
                 <h5>Productos del Pedido</h5>
                 <ListGroup variant="flush">
-                  {selectedOrder.productos?.map((prod, index) => (
-                    <ListGroup.Item key={index} className="d-flex justify-content-between">
+                  {selectedOrder.productos?.map((prod) => (
+                    // Renderiza cada producto con cantidad y subtotal
+                    <ListGroup.Item key={prod.id} className="d-flex justify-content-between">
                       <span>{prod.nombre} (x{prod.cantidad})</span>
                       <span>${(prod.precio * prod.cantidad).toLocaleString('es-CL')}</span>
                     </ListGroup.Item>
@@ -223,6 +239,7 @@ function AdminPedidos() {
         </Modal.Footer>
       </Modal>
 
+      {/* Modal para editar el estado del pedido */}
       <Modal show={showEditModal} onHide={handleCloseModals} className="custom-admin-modal">
         <Modal.Header closeButton>
           <Modal.Title>Editar Estado Pedido: #{selectedOrder?.id}</Modal.Title>
@@ -231,6 +248,7 @@ function AdminPedidos() {
           <Modal.Body>
             <p><strong>Cliente:</strong> {selectedOrder?.cliente}</p>
             <p><strong>Total:</strong> ${selectedOrder?.total?.toLocaleString('es-CL')}</p>
+            {/* Dropdown para cambiar el estado del pedido */}
             <Form.Group controlId="orderStatus">
               <Form.Label>Cambiar Estado del Pedido</Form.Label>
               <Form.Select name="orderStatus" defaultValue={selectedOrder?.estado} required>

@@ -2,8 +2,12 @@ import React from "react";
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 
+// Panel de administración para configurar parámetros del sistema
 function AdminConfig() {
+  // Actualiza el título de la página
   useDocumentTitle("Admin: Configuración");
+
+  // Manejador para guardar cambios de configuración (simulación)
   const handleSaveChanges = (e) => {
     e.preventDefault();
     if (window.showToast) {
@@ -19,6 +23,7 @@ function AdminConfig() {
         <h1 className="h2">Configuración del Sistema</h1>
       </div>
       <Row>
+        {/* Tarjeta de configuración general de la tienda */}
         <Col md={6}>
           <Card className="border-0 shadow-sm mb-4">
             <Card.Header className="bg-white">
@@ -26,6 +31,7 @@ function AdminConfig() {
             </Card.Header>
             <Card.Body>
               <Form onSubmit={handleSaveChanges}>
+                {/* Datos principales del negocio */}
                 <Form.Group className="mb-3" controlId="storeName">
                   <Form.Label>Nombre de la Tienda</Form.Label>
                   <Form.Control type="text" defaultValue="HuertoHogar" />
@@ -51,6 +57,8 @@ function AdminConfig() {
             </Card.Body>
           </Card>
         </Col>
+        
+        {/* Tarjeta de configuración de políticas de envío */}
         <Col md={6}>
           <Card className="border-0 shadow-sm mb-4">
             <Card.Header className="bg-white">
@@ -58,9 +66,9 @@ function AdminConfig() {
             </Card.Header>
             <Card.Body>
               <Form onSubmit={handleSaveChanges}>
+                {/* Parámetros de costo y envío gratis */}
                 <Form.Group className="mb-3" controlId="shippingCost">
                   <Form.Label>Costo de Envío Estándar</Form.Label>
-                  {/* El valor 3500 lo obtengo de tu cartManager.js antiguo */}
                   <Form.Control type="number" min="0" defaultValue="3500" />
                 </Form.Group>
 

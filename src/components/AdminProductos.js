@@ -4,30 +4,37 @@ import useDocumentTitle from '../hooks/useDocumentTitle';
 import { useProducts } from '../context/ProductContext';
 import { apiService } from '../services/apiService';
 
+// Componente para gestionar el catálogo de productos
 function AdminProductos() {
   useDocumentTitle('Admin: Productos');
   const { products, refreshProducts } = useProducts();
+  
+  // Estados para gestionar el modal y los datos del producto
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('new');
   const [currentProduct, setCurrentProduct] = useState(null);
   const [isSaving, setIsSaving] = useState(false); 
 
+  // Abre el modal en modo creación o edición
   const handleShowModal = (mode, product = null) => {
     setModalMode(mode);
     setCurrentProduct(product);
     setShowModal(true);
   };
 
+  // Cierra el modal y limpia los datos
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentProduct(null);
-    setIsSaving(false); 
+    setIsSaving(false);
   };
 
+  // Elimina un producto después de confirmar
   const handleDelete = async (id) => {
     if (window.confirm(`¿Estás seguro de eliminar el producto ${id}?`)) {
       try {
         await apiService.delete(`/admin/productos/${id}`);
+        // Recarga la lista de productos después de eliminar
         await refreshProducts();
         if (window.showToast) window.showToast(`Producto eliminado`, 'success');
       } catch (error) {
@@ -37,12 +44,14 @@ function AdminProductos() {
     }
   };
 
+  // Guarda un producto nuevo o actualiza uno existente
   const handleSaveProduct = async (e) => {
     e.preventDefault();
     if (isSaving) return;
     setIsSaving(true);
 
     const formData = new FormData(e.target);
+    // Estructura de datos del producto a guardar
     const productData = {
       id: currentProduct ? currentProduct.id : null,
       sku: currentProduct ? currentProduct.sku : `SKU-${Date.now()}`,
@@ -57,6 +66,7 @@ function AdminProductos() {
     };
 
     try {
+      // Determina si es crear o actualizar producto
       if (modalMode === 'new') {
         await apiService.post('/admin/productos', productData, true);
         if (window.showToast) window.showToast('Producto creado exitosamente', 'success');
@@ -65,6 +75,7 @@ function AdminProductos() {
         if (window.showToast) window.showToast('Producto actualizado correctamente', 'success');
       }
       
+      // Recarga lista de productos después de guardar
       await refreshProducts();
       handleCloseModal();
       
@@ -77,7 +88,7 @@ function AdminProductos() {
 
   return (
     <Container fluid>
-      {/* Título y Botón Agregar */}
+      {/* Encabezado con título y botón para agregar nuevo producto */}
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 className="h2">Gestión de Productos</h1>
         <Button variant="success" onClick={() => handleShowModal('new')}>
@@ -85,7 +96,7 @@ function AdminProductos() {
         </Button>
       </div>
 
-      {/* Tabla de Productos */}
+      {/* Tabla listando todos los productos con acciones */}
       <div className="table-responsive">
         <Table striped hover responsive>
           <thead>
@@ -100,6 +111,7 @@ function AdminProductos() {
             </tr>
           </thead>
           <tbody>
+            {/* Renderiza cada producto con imagen, datos y botones de editar/eliminar */}
             {products.map(product => (
               <tr key={product.id}>
                 <td>{product.id}</td>
@@ -116,6 +128,7 @@ function AdminProductos() {
                 <td>${product.precio.toLocaleString('es-CL')}</td>
                 <td>{product.stock}</td>
                 <td>
+                  {/* Botones para editar y eliminar producto */}
                   <Button variant="outline-primary" size="sm" className="me-1" onClick={() => handleShowModal('edit', product)}>
                     <i className="bi bi-pencil"></i>
                   </Button>
@@ -129,7 +142,7 @@ function AdminProductos() {
         </Table>
       </div>
 
-      {/* Modal de Edición/Creación */}
+      {/* Modal para crear o editar producto */}
       <Modal show={showModal} onHide={handleCloseModal} size="lg" backdrop="static">
         <Modal.Header closeButton>
           <Modal.Title>
@@ -139,6 +152,7 @@ function AdminProductos() {
 
         <Modal.Body>
           <Form id="formProducto" onSubmit={handleSaveProduct}>
+            {/* Nombre y categoría */}
             <Row>
               <Col md={6} className="mb-3">
                 <Form.Group controlId="productName">
@@ -160,6 +174,7 @@ function AdminProductos() {
               </Col>
             </Row>
 
+            {/* Precio y stock */}
             <Row>
               <Col md={6} className="mb-3">
                 <Form.Group controlId="productPrice">
@@ -175,6 +190,7 @@ function AdminProductos() {
               </Col>
             </Row>
 
+            {/* Descripción e imagen */}
             <Form.Group className="mb-3" controlId="productDescription">
               <Form.Label>Descripción</Form.Label>
               <Form.Control as="textarea" name="productDescription" rows={3} defaultValue={currentProduct?.descripcion || ''} placeholder="Breve descripción..." />
@@ -185,6 +201,7 @@ function AdminProductos() {
               <Form.Control type="url" name="productImage" defaultValue={currentProduct?.imagen} placeholder="https://..." />
             </Form.Group>
 
+            {/* Origen y unidad de medida */}
             <Row>
               <Col md={6} className="mb-3">
                 <Form.Group controlId="productOrigin">
@@ -214,8 +231,8 @@ function AdminProductos() {
           <Button variant="secondary" onClick={handleCloseModal} disabled={isSaving}>
             Cancelar
           </Button>
-          
 
+          {/* Botón guardar con estado de carga */}
           <Button variant="success" type="submit" form="formProducto" disabled={isSaving}>
             {isSaving ? (
               <>

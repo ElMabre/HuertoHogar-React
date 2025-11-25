@@ -1,4 +1,19 @@
-/* Estilos del Hero (Index.html) */
+/**
+ * ===== ESTILOS GLOBALES DE APP.CSS =====
+ * 
+ * Este archivo contiene estilos CSS globales reutilizables para la aplicación HuertoHogar.
+ * Incluye animaciones, estilos de componentes frecuentes, y efectos visuales.
+ */
+
+/* ===== SECCIÓN: HERO SECTION ===== */
+/* 
+ * Esto es para: Estilizar el área hero (sección principal de la página de inicio)
+ * 
+ * Esto lo que hace es:
+ * - Aplica un fondo de imagen con overlay oscuro (rgba(0,0,0,0.5)) para mejorar legibilidad de texto
+ * - Imagen de fondo: hero-bg.jpg con posición center, cobertura completa, sin repetición
+ * - Padding de 100px arriba y abajo para dar espacio vertical
+ */
 .hero {
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
   url('https://raw.githubusercontent.com/ElMabre/ProyectoHuertoHogar/refs/heads/main/img/hero-bg.jpg')
@@ -6,7 +21,19 @@
   padding: 100px 0;
 }
 
-/* Animación del logo (Index.html) */
+/* ===== SECCIÓN: ANIMACIÓN DEL LOGO ===== */
+/* 
+ * Esto es para: Definir la animación que se aplica al logo cuando carga la página
+ * 
+ * @keyframes fadeInLogo
+ * Esto lo que hace es:
+ * - De (from): Logo invisible (opacity: 0), desplazado 32px hacia arriba, y escalado al 92%
+ * - A (to): Logo visible (opacity: 1), en posición normal, escalado al 100%
+ * - Duración: 1.2 segundos
+ * - Timing: cubic-bezier para movimiento suave y natural
+ * 
+ * Efecto: El logo aparece suavemente desde arriba mientras se expande
+ */
 @keyframes fadeInLogo {
   from {
     opacity: 0;
@@ -18,6 +45,20 @@
   }
 }
 
+/* 
+ * Esto es para: Aplicar la animación fadeInLogo al logo de la homepage
+ * 
+ * Esto lo que hace es:
+ * - Comienza invisible (opacity: 0)
+ * - Ejecuta animación fadeInLogo en 1.2 segundos con función de timing suave
+ * - Pausa 0.2 segundos antes de iniciar (animation-delay para efecto cascada)
+ * - Se mantiene el estado final (forwards)
+ * - Agrega sombra decorativa con colores verdes (color brand)
+ * - Borde redondeado de 3rem para aspecto moderno
+ * - Fondo blanco semi-transparente para destacar del hero
+ * - Padding interno para espaciado de contenido
+ * - Tamaño responsivo: máx 340px, mín 200px, 90% del ancho en pantallas pequeñas
+ */
 .animate-fade-in {
   opacity: 0;
   animation: fadeInLogo 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
@@ -36,11 +77,38 @@
   margin-bottom: 2.5rem !important;
 }
 
+/* ===== SECCIÓN: INPUT DE CANTIDAD EN CARRITO ===== */
+/* 
+ * Esto es para: Estilizar el input numérico de cantidad en el carrito de compras
+ * 
+ * Esto lo que hace es:
+ * - Establece ancho fijo de 70px para que sea compacto
+ * - Centra el texto dentro del input
+ * - Uso: En CartPage y ProductDetail para seleccionar cantidad de productos
+ */
 .input-cantidad-carrito {
   width: 70px !important;
   text-align: center;
 }
 
+/* ===== SECCIÓN: TARJETAS DE CATEGORÍA CON HOVER ===== */
+/* 
+ * Esto es para: Estilizar las tarjetas de categoría en la homepage con efecto hover
+ * 
+ * .category-card img
+ * Esto lo que hace es:
+ * - Aplica transición suave de 0.3s al atributo transform
+ * - Función easing 'ease' para movimiento natural
+ * - Uso: Animación de imagen cuando se pasa el mouse sobre la tarjeta
+ * 
+ * .category-card:hover img
+ * Esto lo que hace es:
+ * - Cuando el usuario pasa el mouse sobre la tarjeta (.category-card:hover)
+ * - La imagen se escala al 105% (1.05) para efecto de zoom sutil
+ * - Mejora UX y da feedback visual de interactividad
+ * 
+ * Nota: La tarjeta completa es un Link a /productos con parámetro de categoría
+ */
 .category-card img {
   transition: transform 0.3s ease;
 }
