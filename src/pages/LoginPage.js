@@ -6,16 +6,13 @@ import useDocumentTitle from '../hooks/useDocumentTitle';
 
 /**
  * validarEmail - Función utilitaria para validar formato de email
- * 
- * Esto es para: Verificar que el email ingresado por el usuario tenga un formato válido
+ * * Esto es para: Verificar que el email ingresado por el usuario tenga un formato válido
  * antes de intentar autenticación.
- * 
- * Esto lo que hace es: Valida que:
+ * * Esto lo que hace es: Valida que:
  * - El email no sea null/undefined
  * - Sea una cadena de texto válida
  * - Cumpla con el patrón regex: caracteres@caracteres.extensión
- * 
- * @param {string} email - Dirección de email a validar
+ * * @param {string} email - Dirección de email a validar
  * @returns {boolean} - true si el email es válido, false en caso contrario
  */
 const validarEmail = ( email ) => {
@@ -27,38 +24,34 @@ const validarEmail = ( email ) => {
 
 /**
  * validarPassword - Función utilitaria para validar la contraseña
- * 
- * Esto es para: Verificar que la contraseña ingresada cumpla con requisitos mínimos
+ * * Esto es para: Verificar que la contraseña ingresada cumpla con requisitos mínimos
  * de seguridad y formato.
- * 
- * Esto lo que hace es: Valida que:
+ * * Esto lo que hace es: Valida que:
  * - La contraseña no sea null/undefined
  * - Sea una cadena de texto válida
  * - Tenga entre 4 y 10 caracteres (según validación en handleSubmit)
- * 
- * @param {string} pass - Contraseña a validar
+ * * @param {string} pass - Contraseña a validar
  * @returns {boolean} - true si la contraseña es válida, false en caso contrario
  */
 const validarPassword = ( pass ) => {
-  if (!pass || typeof pass !== 'string') return false; 
+  if (!pass || typeof pass !== 'string') return false;
+  // CORRECCIÓN: Se agrega el retorno de la validación de longitud
+  return pass.length >= 4 && pass.length <= 10;
 };
 // ===== FIN DE FUNCIONES DE VALIDACIÓN =====
 
 /**
  * LoginPage Component
- * 
- * Esto es para: Permitir que usuarios existentes inicien sesión en la aplicación
+ * * Esto es para: Permitir que usuarios existentes inicien sesión en la aplicación
  * con sus credenciales (email y contraseña).
- * 
- * Esto lo que hace es: Renderiza una página de login que:
+ * * Esto lo que hace es: Renderiza una página de login que:
  * - Solicita email y contraseña del usuario
  * - Valida los campos antes de enviarlos
  * - Usa el contexto de autenticación para procesar el login
  * - Redirige al usuario: admin si es administrador, home si es cliente
  * - Muestra mensajes de error si las credenciales son incorrectas
  * - Proporciona links para registrarse o recuperar contraseña
- * 
- * Esto es para el flujo: Es la entrada para usuarios registrados que necesitan
+ * * Esto es para el flujo: Es la entrada para usuarios registrados que necesitan
  * acceder a sus cuentas, funciones administrativas, y carrito de compras.
  */
 function LoginPage() {
@@ -86,10 +79,8 @@ function LoginPage() {
 
   /**
    * handleSubmit - Manejador del envío del formulario de login
-   * 
-   * Esto es para: Procesar la solicitud de login cuando el usuario hace click en "Ingresar"
-   * 
-   * Esto lo que hace es:
+   * * Esto es para: Procesar la solicitud de login cuando el usuario hace click en "Ingresar"
+   * * Esto lo que hace es:
    * 1. Previene el comportamiento por defecto del formulario
    * 2. Limpia errores anteriores
    * 3. Valida que email y password cumplan requisitos
@@ -97,8 +88,7 @@ function LoginPage() {
    * 5. Si la validación es OK, intenta login con las credenciales
    * 6. Si login es exitoso, redirige según rol (admin → /admin, cliente → /)
    * 7. Si login falla, muestra mensaje de error general
-   * 
-   * @param {Event} e - Evento del formulario
+   * * @param {Event} e - Evento del formulario
    */
   const handleSubmit = ( e ) => {
     e.preventDefault();
