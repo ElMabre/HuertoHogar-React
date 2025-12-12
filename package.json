@@ -28,7 +28,10 @@
       "react-app/jest"
     ],
     "env": {
-      "jasmine": true
+      "jasmine": true,
+      "es2020": true,
+      "browser": true,
+      "node": true
     },
     "rules": {
       "jest/no-jasmine-globals": "off"
