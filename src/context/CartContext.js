@@ -1,13 +1,12 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { useProducts } from './ProductContext';
+import { apiService } from '../services/apiService'; // <--- IMPORTANTE: Importamos apiService
 
 // Crear el contexto del carrito de compras
 const CartContext = createContext();
 
 /**
  * Hook personalizado para acceder al contexto del carrito
- * Esto lo que hace es: Permite que los componentes accedan fácilmente al contexto del carrito
- * Esto es para: Simplificar el acceso a funciones y datos del carrito desde cualquier componente
  */
 export const useCart = () => {
   return useContext(CartContext);
@@ -18,8 +17,6 @@ const SHIPPING_COST = 3500;
 
 /**
  * CartProvider Component
- * Esto lo que hace es: Gestiona el estado del carrito de compras de toda la aplicación
- * Esto es para: Proporcionar funciones de agregar, remover, actualizar cantidad, calcular totales y persistir en localStorage
  */
 export const CartProvider = ({ children }) => {
   // Obtener lista de productos del contexto de productos
@@ -27,8 +24,6 @@ export const CartProvider = ({ children }) => {
   
   /**
    * Estado del carrito con inicialización desde localStorage
-   * Esto lo que hace es: Carga el carrito guardado al iniciar la app, o inicia vacío si no existe
-   * Esto es para: Persistir el carrito entre sesiones del usuario
    */
   const [cartItems, setCartItems] = useState(() => {
     const localData = localStorage.getItem('huertohogar_carrito_react');
@@ -37,8 +32,6 @@ export const CartProvider = ({ children }) => {
 
   /**
    * Efecto: Guardar carrito en localStorage cada vez que cambia
-   * Esto lo que hace es: Sincroniza el estado del carrito con localStorage automáticamente
-   * Esto es para: Mantener el carrito persistido incluso si el usuario cierra la app
    */
   useEffect(() => {
     localStorage.setItem('huertohogar_carrito_react', JSON.stringify(cartItems));
@@ -46,8 +39,6 @@ export const CartProvider = ({ children }) => {
 
   /**
    * Función: Agregar producto al carrito
-   * Esto lo que hace es: Añade un producto al carrito o incrementa su cantidad si ya existe
-   * Esto es para: Permitir que los usuarios agreguen productos al carrito
    */
   const addToCart = useCallback((productId, quantity = 1) => {
     // Buscar el producto en la lista de productos disponibles
@@ -91,8 +82,6 @@ export const CartProvider = ({ children }) => {
 
   /**
    * Función: Remover producto del carrito
-   * Esto lo que hace es: Elimina completamente un producto del carrito
-   * Esto es para: Permitir que los usuarios eliminen productos que no desean comprar
    */
   const removeFromCart = useCallback((productId) => {
     setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
@@ -101,8 +90,6 @@ export const CartProvider = ({ children }) => {
 
   /**
    * Función: Actualizar cantidad de un producto en el carrito
-   * Esto lo que hace es: Cambia la cantidad de un producto o lo elimina si es <= 0
-   * Esto es para: Permitir que los usuarios ajusten cuántas unidades desean comprar
    */
   const updateQuantity = useCallback((productId, newQuantity) => {
     // Convertir la cantidad a número
@@ -142,17 +129,13 @@ export const CartProvider = ({ children }) => {
 
   /**
    * Función: Vaciar el carrito
-   * Esto lo que hace es: Elimina todos los productos del carrito (con confirmación opcional)
-   * Esto es para: Permitir que los usuarios limpien su carrito rápidamente
    */
   const clearCart = useCallback((forceClear = false) => {
-    // Si el carrito está vacío y no se fuerza, mostrar mensaje
     if (cartItems.length === 0 && !forceClear) {
       if (window.showToast) window.showToast('El carrito ya está vacío', 'info');
       return;
     }
 
-    // Pedir confirmación o vaciar directamente si forceClear es true
     if (forceClear || window.confirm('¿Estás seguro de que deseas vaciar el carrito?')) {
       setCartItems([]);
       if (!forceClear && window.showToast) {
@@ -163,8 +146,6 @@ export const CartProvider = ({ children }) => {
 
   /**
    * Función: Calcular subtotal del carrito
-   * Esto lo que hace es: Suma el costo de todos los productos (cantidad × precio)
-   * Esto es para: Obtener el monto antes de envío e impuestos
    */
   const calculateSubtotal = useCallback(() => {
     return cartItems.reduce((total, item) => total + (item.precio * item.cantidad), 0);
@@ -172,8 +153,6 @@ export const CartProvider = ({ children }) => {
 
   /**
    * Función: Calcular costo de envío
-   * Esto lo que hace is: Define envío gratis para órdenes >= $15.000, sino cuesta $3.500
-   * Esto es para: Incentivar compras mayores con envío gratis
    */
   const calculateShipping = useCallback(() => {
     const sub = calculateSubtotal();
@@ -186,8 +165,6 @@ export const CartProvider = ({ children }) => {
 
   /**
    * Función: Calcular total final
-   * Esto lo que hace es: Suma subtotal + costo de envío
-   * Esto es para: Obtener el monto total que debe pagar el cliente
    */
   const calculateTotal = useCallback(() => {
     return calculateSubtotal() + calculateShipping();
@@ -195,24 +172,60 @@ export const CartProvider = ({ children }) => {
 
   /**
    * Función: Obtener cantidad total de items en el carrito
-   * Esto lo que hace es: Suma la cantidad de todas las unidades (no items únicos)
-   * Esto es para: Mostrar el badge del carrito en la navbar con el total de productos
    */
   const getTotalItems = useCallback(() => {
     return cartItems.reduce((total, item) => total + item.cantidad, 0);
   }, [cartItems]);
 
+  /**
+   * NUEVA FUNCIÓN: Realizar Checkout
+   * Envía la orden al backend utilizando apiService para asegurar la autenticación.
+   * Retorna la URL de pago si es exitoso.
+   */
+  const checkout = useCallback(async () => {
+    if (cartItems.length === 0) {
+        if (window.showToast) window.showToast('El carrito está vacío', 'warning');
+        return null;
+    }
+
+    const totalAmount = calculateTotal();
+    
+    // Construir el objeto del pedido
+    const orderData = {
+        total: totalAmount,
+        productos: cartItems.map(item => ({
+            productoId: item.id,
+            cantidad: item.cantidad,
+            precio: item.precio
+        }))
+    };
+
+    try {
+        // Usamos apiService.post con el tercer parámetro 'true' para indicar que es privada (envía Token)
+        const response = await apiService.post('/pedidos', orderData, true);
+        
+        // Si todo sale bien, vaciamos el carrito y devolvemos la respuesta
+        clearCart(true); 
+        return response; // Debería contener { paymentUrl: '...' }
+
+    } catch (error) {
+        console.error("Error en checkout (Context):", error);
+        throw error; // Re-lanzamos el error para que el componente lo muestre
+    }
+  }, [cartItems, calculateTotal, clearCart]);
+
   // Objeto con todos los valores y funciones que proporciona el contexto
   const value = {
-    cartItems,              // Array de productos en el carrito
-    addToCart,              // Función para agregar productos
-    removeFromCart,         // Función para eliminar productos
-    updateQuantity,         // Función para cambiar cantidad
-    clearCart,              // Función para vaciar el carrito
-    subtotal: calculateSubtotal(),        // Monto antes de envío
-    shippingCost: calculateShipping(),    // Costo de envío
-    total: calculateTotal(),              // Monto total a pagar
-    totalItems: getTotalItems(),          // Cantidad total de unidades
+    cartItems,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    checkout,                     // <--- Exponemos la nueva función
+    subtotal: calculateSubtotal(),
+    shippingCost: calculateShipping(),
+    total: calculateTotal(),
+    totalItems: getTotalItems(),
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
