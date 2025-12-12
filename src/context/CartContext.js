@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { useProducts } from './ProductContext';
-import { apiService } from '../services/apiService'; // <--- IMPORTANTE: Importamos apiService
+import { apiService } from '../services/apiService'; // <--- IMPORTACIÓN CRÍTICA
 
 // Crear el contexto del carrito de compras
 const CartContext = createContext();
@@ -41,7 +41,6 @@ export const CartProvider = ({ children }) => {
    * Función: Agregar producto al carrito
    */
   const addToCart = useCallback((productId, quantity = 1) => {
-    // Buscar el producto en la lista de productos disponibles
     const product = products.find(p => p.id === productId);
     if (!product) {
       if (window.showToast) window.showToast('Producto no encontrado', 'danger');
@@ -49,11 +48,9 @@ export const CartProvider = ({ children }) => {
     }
 
     setCartItems(prevItems => {
-      // Buscar si el producto ya existe en el carrito
       const existingItemIndex = prevItems.findIndex(item => item.id === productId);
       const currentQuantityInCart = existingItemIndex !== -1 ? prevItems[existingItemIndex].cantidad : 0;
 
-      // Validar que hay stock suficiente para la cantidad solicitada
       if (product.stock < currentQuantityInCart + quantity) {
         if (window.showToast) window.showToast('No hay suficiente stock disponible', 'warning');
         return prevItems;
@@ -61,13 +58,11 @@ export const CartProvider = ({ children }) => {
 
       if (window.showToast) window.showToast('Producto añadido al carrito', 'success');
 
-      // Si el producto ya existe, incrementar su cantidad
       if (existingItemIndex !== -1) {
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex].cantidad += quantity;
         return updatedItems;
       } else {
-        // Si es nuevo, agregarlo al carrito con los datos del producto
         return [...prevItems, {
           id: product.id,
           nombre: product.nombre,
@@ -92,15 +87,12 @@ export const CartProvider = ({ children }) => {
    * Función: Actualizar cantidad de un producto en el carrito
    */
   const updateQuantity = useCallback((productId, newQuantity) => {
-    // Convertir la cantidad a número
     const quantityNum = parseInt(newQuantity);
     if (isNaN(quantityNum) || quantityNum <= 0) {
-      // Si la cantidad es inválida o <= 0, remover el producto
       removeFromCart(productId);
       return;
     }
 
-    // Buscar el producto en el inventario para validar stock
     const product = products.find(p => p.id === productId);
     if (!product) {
       if (window.showToast) window.showToast('Producto no encontrado en el inventario', 'danger');
@@ -112,15 +104,12 @@ export const CartProvider = ({ children }) => {
       const itemIndex = prevItems.findIndex(item => item.id === productId);
       if (itemIndex === -1) return prevItems;
 
-      // Limitar la cantidad a lo disponible en stock
       const finalQuantity = Math.min(quantityNum, product.stock);
 
-      // Mostrar advertencia si se solicitó más de lo disponible
       if (quantityNum > product.stock) {
         if (window.showToast) window.showToast(`Solo quedan ${product.stock} unidades de ${product.nombre}`, 'warning');
       }
 
-      // Actualizar la cantidad del producto
       const updatedItems = [...prevItems];
       updatedItems[itemIndex].cantidad = finalQuantity;
       return updatedItems;
@@ -145,18 +134,17 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   /**
-   * Función: Calcular subtotal del carrito
+   * Función: Calcular subtotal
    */
   const calculateSubtotal = useCallback(() => {
     return cartItems.reduce((total, item) => total + (item.precio * item.cantidad), 0);
   }, [cartItems]);
 
   /**
-   * Función: Calcular costo de envío
+   * Función: Calcular envío
    */
   const calculateShipping = useCallback(() => {
     const sub = calculateSubtotal();
-    // Envío gratis si la orden está vacía o supera $15.000
     if (sub === 0 || sub >= 15000) {
       return 0;
     }
@@ -171,16 +159,15 @@ export const CartProvider = ({ children }) => {
   }, [calculateSubtotal, calculateShipping]);
 
   /**
-   * Función: Obtener cantidad total de items en el carrito
+   * Función: Obtener cantidad total de items
    */
   const getTotalItems = useCallback(() => {
     return cartItems.reduce((total, item) => total + item.cantidad, 0);
   }, [cartItems]);
 
   /**
-   * NUEVA FUNCIÓN: Realizar Checkout
-   * Envía la orden al backend utilizando apiService para asegurar la autenticación.
-   * Retorna la URL de pago si es exitoso.
+   * --- NUEVA FUNCIÓN: PROCESAR PAGO (CHECKOUT) ---
+   * Maneja la comunicación con el backend para crear el pedido.
    */
   const checkout = useCallback(async () => {
     if (cartItems.length === 0) {
@@ -190,38 +177,39 @@ export const CartProvider = ({ children }) => {
 
     const totalAmount = calculateTotal();
     
-    // Construir el objeto del pedido
+    // Construimos el objeto del pedido asegurando tipos numéricos correctos
     const orderData = {
         total: totalAmount,
         productos: cartItems.map(item => ({
             productoId: item.id,
-            cantidad: item.cantidad,
-            precio: item.precio
+            cantidad: Number(item.cantidad), // Convertir a Number para evitar problemas con la API
+            precio: Number(item.precio)      // Convertir a Number
         }))
     };
 
     try {
-        // Usamos apiService.post con el tercer parámetro 'true' para indicar que es privada (envía Token)
+        // Llamada segura a la API (el 'true' indica que requiere Token)
         const response = await apiService.post('/pedidos', orderData, true);
         
-        // Si todo sale bien, vaciamos el carrito y devolvemos la respuesta
+        // Si el pedido se creó con éxito, vaciamos el carrito
         clearCart(true); 
-        return response; // Debería contener { paymentUrl: '...' }
+        
+        return response; // Retorna { pedido: {...}, paymentUrl: '...' }
 
     } catch (error) {
         console.error("Error en checkout (Context):", error);
-        throw error; // Re-lanzamos el error para que el componente lo muestre
+        throw error; // Lanzamos el error para que CartPage lo muestre
     }
   }, [cartItems, calculateTotal, clearCart]);
 
-  // Objeto con todos los valores y funciones que proporciona el contexto
+  // Objeto con todos los valores y funciones
   const value = {
     cartItems,
     addToCart,
     removeFromCart,
     updateQuantity,
     clearCart,
-    checkout,                     // <--- Exponemos la nueva función
+    checkout,                     // <--- Exponemos la función checkout
     subtotal: calculateSubtotal(),
     shippingCost: calculateShipping(),
     total: calculateTotal(),

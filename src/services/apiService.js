@@ -60,6 +60,11 @@ const request = async (endpoint, method = 'GET', body = null, isPrivate = false)
     // Si el endpoint requiere permiso (isPrivate: true), adjuntamos el Bearer Token automáticamente.
     if (isPrivate) {
         const token = getToken();
+        
+        // DEBUG: Log para verificar que se está enviando el token correcto
+        // Esto te ayudará a ver en la consola si el token es "null", "undefined" o uno válido
+        console.log(`[API Security] Token enviado a ${endpoint}:`, token ? `${token.substring(0, 10)}...` : 'NULL');
+
         if (token) {
             headers.append('Authorization', `Bearer ${token}`);
         } else {
@@ -88,16 +93,33 @@ const request = async (endpoint, method = 'GET', body = null, isPrivate = false)
         const response = await fetch(fullUrl, config);
 
         // Caso especial: 204 No Content (común en DELETE o Updates sin retorno).
-        // Resolvemos null porque response.json() fallaría si el cuerpo está vacío.
+        // Resolvemos null inmediatamente porque response.json() fallaría si el cuerpo está vacío.
         if (response.status === 204) {
             return Promise.resolve(null);
         }
 
-        const data = await response.json();
+        // --- MANEJO ROBUSTO DE LA RESPUESTA ---
+        // Leemos como texto primero para evitar el error "Unexpected end of JSON input"
+        // si el servidor devuelve un error 403/500 con cuerpo vacío o texto plano.
+        const text = await response.text();
+        let data;
+        try {
+            data = text ? JSON.parse(text) : {};
+        } catch (e) {
+            // Si falla el parseo, usamos el texto plano como mensaje
+            console.warn("La respuesta no es un JSON válido:", text);
+            data = { message: text || `Error ${response.status}` };
+        }
 
         // Manejo centralizado de errores de API (400, 401, 403, 500).
         // Si el fetch fue exitoso técnicamente pero el servidor respondió error, lanzamos excepción aquí.
         if (!response.ok) {
+            
+            // Diagnóstico específico para 403
+            if (response.status === 403) {
+                console.error("ERROR 403: El servidor rechazó el token. Posibles causas: Token expirado, rol insuficiente o formato inválido.");
+            }
+
             const errorMsg = data.message || data.error || `Error ${response.status}`;
             console.error('Error en API:', errorMsg);
             return Promise.reject(new Error(errorMsg));
@@ -107,7 +129,7 @@ const request = async (endpoint, method = 'GET', body = null, isPrivate = false)
     } catch (error) {
         // Errores de red (DNS, timeout, servidor caído).
         console.error('Error de red o fetch:', error);
-        return Promise.reject(new Error('Error de conexión con el servidor.'));
+        return Promise.reject(new Error(error.message || 'Error de conexión con el servidor.'));
     }
 };
 
